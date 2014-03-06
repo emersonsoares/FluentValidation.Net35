@@ -101,7 +101,6 @@
     <Compile Include="CreditCardValidatorTests.cs" />
     <Compile Include="CultureScope.cs" />
     <Compile Include="CustomFailureActionTester.cs" />
-    <Compile Include="DisplayAttributeTests.cs" />
     <Compile Include="ExactLengthValidatorTester.cs" />
     <Compile Include="ExclusiveBetweenValidatorTests.cs" />
     <Compile Include="Extensions.cs" />
