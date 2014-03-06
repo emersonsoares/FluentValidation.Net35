@@ -31,33 +31,5 @@ namespace FluentValidation.Tests {
 		public void Setup() {
 			Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 		}
-
-		[Test]
-		public void Infers_display_name_from_DisplayAttribute() {
-			var validator = new InlineValidator<DisplayNameTestModel> {
-				v => v.RuleFor(x => x.Name1).NotNull()
-			};
-
-			var result = validator.Validate(new DisplayNameTestModel());
-			result.Errors.Single().ErrorMessage.ShouldEqual("'Foo' must not be empty.");
-		}
-
-		[Test]
-		public void Infers_display_name_from_DisplayNameAttribute() {
-			var validator = new InlineValidator<DisplayNameTestModel> {
-				v => v.RuleFor(x => x.Name2).NotNull()
-			};
-
-			var result = validator.Validate(new DisplayNameTestModel());
-			result.Errors.Single().ErrorMessage.ShouldEqual("'Bar' must not be empty.");
-		}
-
-		public class DisplayNameTestModel {
-			[Display(Name = "Foo")]
-			public string Name1 { get; set; }
-
-			[DisplayName("Bar")]
-			public string Name2 { get; set; }
-		}
 	}
 }

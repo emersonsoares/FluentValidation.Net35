@@ -20,7 +20,6 @@ namespace FluentValidation.Tests {
 	using System;
 	using System.Globalization;
 	using System.Threading;
-	using System.Threading.Tasks;
 	using NUnit.Framework;
 	using Results;
 
@@ -97,12 +96,6 @@ namespace FluentValidation.Tests {
 		[Test]
 		public void Should_throw_when_custom_rule_is_null() {
 			typeof(ArgumentNullException).ShouldBeThrownBy(() => validator.Custom((Func<Person, ValidationFailure>)null));
-		}
-
-		[Test]
-		public void Should_throw_when_customasync_rule_is_null()
-		{
-			typeof(ArgumentNullException).ShouldBeThrownBy(() => validator.CustomAsync((Func<Person, Task<ValidationFailure>>)null));
 		}
 
 		[Test]
