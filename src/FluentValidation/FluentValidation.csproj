@@ -77,8 +77,6 @@
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AbstractValidator.cs" />
-    <Compile Include="TaskHelpers\TaskHelpers.cs" />
-    <Compile Include="TaskHelpers\TaskHelpersExtensions.cs" />
     <Compile Include="AssemblyScanner.cs" />
     <Compile Include="Attributes\AttributedValidatorFactory.cs" />
     <Compile Include="Attributes\ValidatorAttribute.cs" />
@@ -129,8 +127,6 @@
     <Compile Include="Enums.cs" />
     <Compile Include="ValidatorDescriptor.cs" />
     <Compile Include="Validators\AbstractComparisonValidator.cs" />
-    <Compile Include="Validators\AsyncPredicateValidator.cs" />
-    <Compile Include="Validators\AsyncValidatorBase.cs" />
     <Compile Include="Validators\ChildCollectionValidatorAdaptor.cs" />
     <Compile Include="Validators\ChildValidatorAdaptor.cs" />
     <Compile Include="Validators\CreditCardValidator.cs" />

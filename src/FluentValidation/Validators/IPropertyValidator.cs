@@ -16,30 +16,31 @@
 // The latest version of this file can be found at http://www.codeplex.com/FluentValidation
 #endregion
 
-namespace FluentValidation.Validators {
-	using System;
-	using System.Collections.Generic;
-	using System.Threading.Tasks;
-	using Resources;
-	using Results;
+namespace FluentValidation.Validators
+{
+    using System;
+    using System.Collections.Generic;
+    using Resources;
+    using Results;
 
-	/// <summary>
-	/// A custom property validator.
-	/// This interface should not be implemented directly in your code as it is subject to change.
-	/// Please inherit from <see cref="PropertyValidator">PropertyValidator</see> instead.
-	/// </summary>
-	public interface IPropertyValidator {
-		IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context);
+    /// <summary>
+    /// A custom property validator.
+    /// This interface should not be implemented directly in your code as it is subject to change.
+    /// Please inherit from <see cref="PropertyValidator">PropertyValidator</see> instead.
+    /// </summary>
+    public interface IPropertyValidator
+    {
+        IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context);
 
-		Task<IEnumerable<ValidationFailure>> ValidateAsync(PropertyValidatorContext context);
+        /// <summary>
+        /// Custom message arguments. 
+        /// Arg 1: Instance being validated
+        /// Arg 2: Property value
+        /// </summary>
+        ICollection<Func<object, object, object>> CustomMessageFormatArguments { get; }
 
-		/// <summary>
-		/// Custom message arguments. 
-		/// Arg 1: Instance being validated
-		/// Arg 2: Property value
-		/// </summary>
-		ICollection<Func<object, object, object>> CustomMessageFormatArguments { get; }
-		Func<object, object> CustomStateProvider { get; set; }
-		IStringSource ErrorMessageSource { get; set; }
-	}
+        Func<object, object> CustomStateProvider { get; set; }
+
+        IStringSource ErrorMessageSource { get; set; }
+    }
 }
