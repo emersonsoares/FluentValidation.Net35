@@ -6,6 +6,26 @@
     using System.Reflection;
     using Internal;
 
+    public static class ExpressionEx
+    {
+        public static BinaryExpression Assign(Expression left, Expression right)
+        {
+            var assign = typeof(Assigner<>).MakeGenericType(left.Type).GetMethod("Assign");
+
+            var assignExpr = Expression.Add(left, right, assign);
+
+            return assignExpr;
+        }
+
+        private static class Assigner<T>
+        {
+            public static T Assign(ref T left, T right)
+            {
+                return (left = right);
+            }
+        }
+    }
+
     public static class MemberAccessor<TObject>
     {
         public static MemberAccessor<TObject, TValue> From<TValue>(Expression<Func<TObject, TValue>> getExpression)
@@ -31,9 +51,9 @@
 
         static Expression<Action<TObject, TValue>> CreateSetExpression(Expression<Func<TObject, TValue>> getExpression)
         {
-            var valueParameter = Expression.Parameter(getExpression.Body.Type);
+            var valueParameter = Expression.Parameter(getExpression.Body.Type, getExpression.Body.Type.Name);
             var assignExpression = Expression.Lambda<Action<TObject, TValue>>(
-                Expression.Assign(getExpression.Body, valueParameter),
+                ExpressionEx.Assign(getExpression.Body, valueParameter),
                 getExpression.Parameters.First(), valueParameter);
             return assignExpression;
         }
