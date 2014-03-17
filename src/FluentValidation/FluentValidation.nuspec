@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>FluentValidation.Net35</id>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <title>FluentValidation.Net35</title>
         <authors>Jeremy Skinner, Emerson Soares</authors>
         <licenseUrl>http://fluentvalidation.codeplex.com/license</licenseUrl>
