@@ -13,39 +13,54 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Internal {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Reflection;
-	using System.Text.RegularExpressions;
+	using System.Runtime.CompilerServices;
+	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Validators;
 
 	/// <summary>
 	/// Useful extensions
 	/// </summary>
 	public static class Extensions {
-		internal static void Guard(this object obj, string message) {
+		internal static void Guard(this object obj, string message, string paramName) {
 			if (obj == null) {
-				throw new ArgumentNullException(message);
+				throw new ArgumentNullException(paramName, message);
 			}
 		}
 
-		internal static void Guard(this string str, string message) {
-			if (string.IsNullOrEmpty(str)) {
-				throw new ArgumentNullException(message);
+		internal static void Guard(this string str, string message, string paramName) {
+			if (str == null) {
+				throw new ArgumentNullException(paramName, message);
 			}
+
+			if (string.IsNullOrEmpty(str)) {
+				throw new ArgumentException(message, paramName);
+			}
+		}
+
+		/// <summary>
+		/// Checks if the expression is a parameter expression
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <returns></returns>
+		public static bool IsParameterExpression(this LambdaExpression expression) {
+			return expression.Body.NodeType == ExpressionType.Parameter;
 		}
 
 		/// <summary>
 		/// Gets a MemberInfo from a member expression.
 		/// </summary>
 		public static MemberInfo GetMember(this LambdaExpression expression) {
-			var memberExp = RemoveUnary(expression.Body);
+			var memberExp = RemoveUnary(expression.Body) as MemberExpression;
 
 			if (memberExp == null) {
 				return null;
@@ -58,33 +73,64 @@ namespace FluentValidation.Internal {
 		/// Gets a MemberInfo from a member expression.
 		/// </summary>
 		public static MemberInfo GetMember<T, TProperty>(this Expression<Func<T, TProperty>> expression) {
-			var memberExp = RemoveUnary(expression.Body);
+			var memberExp = RemoveUnary(expression.Body) as MemberExpression;
 
 			if (memberExp == null) {
 				return null;
 			}
 
+			Expression currentExpr = memberExp.Expression;
+
+			// Unwind the expression to get the root object that the expression acts upon. 
+			while (true) {
+				currentExpr = RemoveUnary(currentExpr);
+
+				if (currentExpr != null && currentExpr.NodeType == ExpressionType.MemberAccess) {
+					currentExpr = ((MemberExpression)currentExpr).Expression;
+				} else {
+					break;
+				}
+			}
+
+			if (currentExpr == null || currentExpr.NodeType != ExpressionType.Parameter) {
+				return null; // We don't care if we're not acting upon the model instance. 
+			}
+
 			return memberExp.Member;
 		}
 
-		private static MemberExpression RemoveUnary(Expression toUnwrap) {
+
+		private static Expression RemoveUnary(Expression toUnwrap) {
 			if (toUnwrap is UnaryExpression) {
-				return ((UnaryExpression)toUnwrap).Operand as MemberExpression;
+				return ((UnaryExpression)toUnwrap).Operand;
 			}
 
-			return toUnwrap as MemberExpression;
+			return toUnwrap;
 		}
-
 
 		/// <summary>
 		/// Splits pascal case, so "FooBar" would become "Foo Bar"
 		/// </summary>
 		public static string SplitPascalCase(this string input) {
-			if (string.IsNullOrEmpty(input)) {
+			if (string.IsNullOrEmpty(input))
 				return input;
+
+			var retVal = new StringBuilder(input.Length + 5);
+
+			for (int i = 0; i < input.Length; ++i) {
+				var currentChar = input[i];
+				if (char.IsUpper(currentChar)) {
+					if ((i > 1 && !char.IsUpper(input[i - 1]))
+							|| (i + 1 < input.Length && !char.IsUpper(input[i + 1])))
+						retVal.Append(' ');
+				}
+
+				retVal.Append(currentChar);
 			}
-			return Regex.Replace(input, "([A-Z])", " $1").Trim();
+
+			return retVal.ToString().Trim();
 		}
+
 		/// <summary>
 		/// Helper method to construct a constant expression from a constant.
 		/// </summary>
@@ -92,80 +138,68 @@ namespace FluentValidation.Internal {
 		/// <typeparam name="TProperty">Type of property being validated</typeparam>
 		/// <param name="valueToCompare">The value being compared</param>
 		/// <returns></returns>
-		internal static Expression<Func<T, TProperty>> GetConstantExpresionFromConstant<T, TProperty>(TProperty valueToCompare) {
+		internal static Expression<Func<T, TProperty>> GetConstantExpressionFromConstant<T, TProperty>(TProperty valueToCompare) {
 			Expression constant = Expression.Constant(valueToCompare, typeof(TProperty));
 			ParameterExpression parameter = Expression.Parameter(typeof(T), "t");
 			return Expression.Lambda<Func<T, TProperty>>(constant, parameter);
 		}
 
 		internal static void ForEach<T>(this IEnumerable<T> source, Action<T> action) {
-			foreach(var item in source) {
-				action(item);	
+			foreach (var item in source) {
+				action(item);
 			}
 		}
 
-		/// <summary>
-		/// Based on a child validator and a propery rule, infers whether the validator should be wrapped in a ChildValidatorAdaptor or a CollectionValidatorAdaptor
-		/// </summary>
-		internal static IPropertyValidator InferPropertyValidatorForChildValidator(PropertyRule rule, IValidator childValidator) {
-			// If the property implements IEnumerable<T> and the validator validates T, assume it's a collection property validator
-			// This is here for backwards compatibility with v2. V3 uses the new SetCollectionValidator method.
-			if (DoesImplementCompatibleIEnumerable(rule.TypeToValidate, childValidator)) {
-				return new ChildCollectionValidatorAdaptor(childValidator);
-			}
-
-			// Otherwise if the validator is allowed to validate the type, assume child validator
-			if (childValidator.CanValidateInstancesOfType(rule.TypeToValidate)) {
-				return new ChildValidatorAdaptor(childValidator);
-			}
-
-			throw new InvalidOperationException(string.Format("The validator '{0}' cannot validate members of type '{1}' - the types are not compatible.", childValidator.GetType().Name, rule.TypeToValidate.Name));
-		}
-
-		private static bool DoesImplementCompatibleIEnumerable(Type propertyType, IValidator childValidator) {
-			//concatenate the property type itself, incase we're using IEnumerable directly (typeof(IEnumerable).GetInterfaces() obviously doesn't include IEnumerable)
-			var interfaces = from i in propertyType.GetInterfaces().Concat(new[] { propertyType })
-							 where i.IsGenericType
-							 where i.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-							 let enumerableType = i.GetGenericArguments()[0]
-							 where childValidator.CanValidateInstancesOfType(enumerableType)
-							 select i;
-
-			return interfaces.Any();
-		}
-
+#pragma warning disable 1591
 		public static Func<object, object> CoerceToNonGeneric<T, TProperty>(this Func<T, TProperty> func) {
 			return x => func((T)x);
-		} 
+		}
 
 		public static Func<object, bool> CoerceToNonGeneric<T>(this Func<T, bool> func) {
+			return x => func((T)x);
+		}
+
+		public static Func<object, CancellationToken, Task<bool>> CoerceToNonGeneric<T>(this Func<T, CancellationToken, Task<bool>> func) {
+			return (x, ct) => func((T)x, ct);
+		}
+
+
+		public static Func<object, Task<bool>> CoerceToNonGeneric<T>(this Func<T, Task<bool>> func) {
+			return x => func((T)x);
+		}
+
+		public static Func<object, int> CoerceToNonGeneric<T>(this Func<T, int> func) {
+			return x => func((T)x);
+		}
+
+		public static Func<object, long> CoerceToNonGeneric<T>(this Func<T, long> func) {
+			return x => func((T)x);
+		}
+
+		public static Func<object, string> CoerceToNonGeneric<T>(this Func<T, string> func) {
+			return x => func((T)x);
+		}
+
+		public static Func<object, System.Text.RegularExpressions.Regex> CoerceToNonGeneric<T>(this Func<T, System.Text.RegularExpressions.Regex> func) {
 			return x => func((T)x);
 		}
 
 		public static Action<object> CoerceToNonGeneric<T>(this Action<T> action) {
 			return x => action((T)x);
 		}
+#pragma warning restore 1591
 
-#if WINDOWS_PHONE
-		// WP7 doesn't support expression tree compilation.
-		// As a workaround, this extension method falls back to delegate compilation. 
-		// However, it only supports simple property references, ie x => x.SomeProperty
-
-		internal static TDelegate Compile<TDelegate>(this Expression<TDelegate> expression) {
-			var compiledDelegate = CompilePropertyGetterExpression(expression, typeof(TDelegate));
-			return (TDelegate)compiledDelegate;
-		}
-
-		static object CompilePropertyGetterExpression(LambdaExpression expression, Type delegateType) {
-			var member = expression.GetMember() as PropertyInfo;
-
-			if (member == null) {
-				throw new NotSupportedException("FluentValidation for WP7 can only be used with expressions that reference public properties, ie x => x.SomeProperty");
+		/// <summary>
+		/// Checks whether this is an asynchronous validation run.
+		/// </summary>
+		/// <param name="ctx"></param>
+		/// <returns></returns>
+		public static bool IsAsync(this ValidationContext ctx) {
+			if (ctx.RootContextData.ContainsKey("__FV_IsAsyncExecution")) {
+				return (ctx.RootContextData["__FV_IsAsyncExecution"] as bool?).GetValueOrDefault();
 			}
 
-			var compiledDelegate = Delegate.CreateDelegate(delegateType, member.GetGetMethod());
-			return compiledDelegate;
+			return false;
 		}
-#endif
 	}
 }

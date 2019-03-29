@@ -1,10 +1,11 @@
 namespace FluentValidation.Tests {
 	using System.Linq;
-	using NUnit.Framework;
+	using Xunit;
+    using System;
+	using TestHelper;
 
-	[TestFixture]
-	public class NameResolutionPluggabilityTester {
-		[Test]
+	public class NameResolutionPluggabilityTester : IDisposable {
+		[Fact]
 		public void Uses_custom_property_name() {
 			ValidatorOptions.PropertyNameResolver = (type, prop, expr) => "foo";
 
@@ -16,7 +17,7 @@ namespace FluentValidation.Tests {
 			error.PropertyName.ShouldEqual("foo");
 		}
 
-		[Test]
+		[Fact]
 		public void Resolves_nested_properties() {
 			var validator = new TestValidator {
 				v => v.RuleFor(x => x.Address.Country).NotNull()
@@ -26,9 +27,22 @@ namespace FluentValidation.Tests {
 			error.PropertyName.ShouldEqual("Address.Country");
 
 		}
+		
+		[Fact]
+		public void ShouldHaveValidationError_Should_support_custom_propertynameresolver() {
+			try {
+				ValidatorOptions.PropertyNameResolver = (type, prop, expr) => "foo";
+				var validator = new TestValidator() {
+					v => v.RuleFor(x => x.Surname).NotNull()
+				};
+				validator.ShouldHaveValidationErrorFor(x => x.Surname, (string) null);
+			}
+			finally {
+				ValidatorOptions.PropertyNameResolver = null;
+			}
+		}
 
-		[TearDown]
-		public void Teardown() {
+		public void Dispose() {
 			ValidatorOptions.PropertyNameResolver = null;
 		}
 	}

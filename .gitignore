@@ -14,3 +14,13 @@ TestResult.xml
 .hg/
 .hgignore
 packages/
+*.sln.ide/
+artifacts/
+TestResults/
+.vs/
+*.lock.json
+*.ncrunch*
+.idea/
+.build/
+docs/_site/
+docs/Gemfile.lock

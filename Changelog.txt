@@ -1,15 +1,284 @@
-5.1 -
+8.1.0 - 6 December 2018
+Added format support for message placeholders.
+Added support for overriding inexers for collection rules.
+Allow ErrorCode to be used to override localization key in the Language Manager.
+Additional error details are now shown in the ShouldNotHaveValidationErrorFor test extension.
+Conditions defined with root-level When/WhenAsync/Unless/UnlessAsync are now only executed once (instead of once for each rule).
+Support Otherwise method chained from root-level When/WhenAsync/Unless/UnlessAsync.
+Minor wording changes to default English error messages.
+Added Skip property to MVC5's CustomizeValidatorAttribute to bring parity with AspNetCore and WebApi integration.
+Japanese translation of the default error messages.
+Remove type constraint on the OverridePropertyName overload that takes an expression.
+
+8.0.101 - 24 November 2018
+Fix clientside property comparison validation adaptor in ASP.NET Core integration.
+
+8.0.100 - 4 September 2018
+Added Greek language translation.
+Resolved an issue where Cascade and Transform couldn't be used with RuleForEach
+
+8.0.0 - 16 Aug 2018
+Support validating only specific properties by path.
+Allow specifying a ruleset with SetValidator for complex properties.
+Introduce PropertyValidatorOptions in order to clean up the IPropretyValidator interface.
+Moved the AttributedValidatorFactory into a separate package.
+IStringSource.GetString now takes a context.
+Major cleanup of asynchronous validation workflow.
+Deprecate SetCollectionValidator in favour of RuleForEach().SetValidator
+Remove the pre-7 version of Custom/CustomAsync.
+Removed deprecated localization system.
+Remove deprecated RemoveRule/ReplaceRule/ClearRules methods.
+
+7.6.105 - 11 August 2018 
+Added Albanian language translations 
+Added Chinese Traditional language translation 
+Fix #858 ValidationTestExtension.When() incorrectly checks each failure instead of all failures
+ 
+7.6.104 - 6 July 2018
+Added AbstractValidator.PreValidate to allow immediate cancellation of validation.
+
+7.6.103 - 16 June 2018
+Using [BindProperty] in AspNetCore now works when implicit child validation is disabled.
+ShouldHaveChildValidator now works when the child validator is inside a DependentRules block.
+Test helpers are now compatible with custom property name resolvers set using ValidatorOptions.PropertyNameResolver.
+Switched to embedded debug symbols.
+
+7.6.102 - 14 June 2018
+Fixed a regression where calling ValidateAsync with RuleForEach would no longer execute tasks sequentially (#799).
+
+7.6.101 - 13 June 2018
+Added support for RuleForEach to the testing extensions (#238).
+Fixed a regression where calling ValidateAsync with RuleForEach could cause a deadlock (#799).
+Added ToString overrides on ValidationResult to generate a string representation of all errors (#778).
+Updated logos thanks to Dylan Beattie (#780).
+
+7.6.100 - 7 June 2018
+Resolved an issue where ValidateAsync was called on child validators when the root validator was invoked synchronously.
+
+7.6 - 1 June 2018
+Fix WhenAsync not working properly when calling Validate instead of ValidateAsync
+Upgrade ASP.NET Core integration to ASP.NET Core 2.1
+Include rules now work with explicitly-selected properties.
+Added caching when instantiating validators to obtain clientside metadata
+
+7.5.2 - 16 March 2018
+Support multiple rulesets on a rule.
+Make setters on ValidationFailure's properties public to allow for easier deserialization.
+Additional overload for OverridePropertyName that takes an expression.
+Add overload of Include that lazily creates the inner validator.
+Allow replacing the default Error Code resolution process
+
+7.5.1 - 11 March 2018
+Support CustomizeValidatorAttribute in WebApi integration
+Resolved issues with referencing FluentValidation from legacy PCLs.
+
+7.5 - 26 February 2018
+Better handling of clientside messages when using custom overriden language resources
+Flag in the ValidationContext's RootDataContext when a validator is invoked by the automatic MVC/WebApi integration
+Improvements to some of the validation tester's messages
+Added Transform method to transform property values prior to validation
+Improve support for DisplayAttribute / DisplayNameAttribute when inferring property display name
+Added Slovak language support
+Added Hebrew language support
+Added Brizilian Portuguese language support
+Cache display names by default
+Ensure ShouldHaveChildValidator test method works with model-level rules
+Removed netstandard1.0 support. Supported platforms are now netstandard1.1, netstandard2.0 and net45.
+
+7.4 - 27 January 2018
+Update DependentRules syntax and mark old syntax as obsolete
+Add workaround for inconsistent behaviour with HttpContext.Items with nonexistent keys in different version of AspNetCore
+Updated ValidationException serialization support
+Add ComparisonProperty to comparison validator message placeholders
+The Test Helper now correctly handles read-only properties
+Add CancellationToken support to ValidateAndThrowAsync and various ValidateAsync overloads
+Introduce MessageBuilderContext to make custom MessageBuilders more useful
+Update Microsoft.AspNetCore.Mvc dependency to 2.0.2
+Update MVC5/WebApi2 AddToModelState extension not to overwrite existing attempted values
+Add SetRulesetForClientsideMessages extension method for MVC5/AspNetCore
+
+7.3.4 - 2 January 2018
+Resolved issue in AspNetCore integration where the change made in 7.3.3 meant that child collections were incorrectly skipped for DataAnnotations-based validation, as well as FV
+
+7.3.3 - 22 December 2017
+Resolved issue in AspNetCore integration where child collections were incorrectly validated by the ModelValidatorProvider
+
+7.3.2 - 21 December 2017
+Added CancellationToken support to child validators
+
+7.3 - 13 December 2017
+Major improvements to the AspNetCore integration including better collection support and optional support for implicit validators
+Marked ValidationException as serializable when running on full framework
+Updated EnumValidator's Flags support to handle the ~0 value
+Fixed TestHelper checking for child validator would respond with the wrong type
+Updated translations for some validators and fixed some incorrect language codes
+Fixed overload of WithName that takes a lambda.
+Updated version of the Czech translations
+Added versions of WhenAsync and UnlessAsync that support CancellationTokens
+Simplify calls to DependentRules
+Add Skip property to CustomizeValidatorAttribute in the ASP.NET Core integration
+Updated language translations for various error messages.
+
+7.2.1 - 24 October 2017
+Introduce MessageFormatterFactory
+Additional language translations
+Additional checks to ensure HttpContext is registered
+
+7.2 - 5 October 2017
+Updated AspNetCore integration to support IValidatableObject
+Updated AspNetCore integration to allow mixing multiple validation strategies in the same model
+Updated AspNetCore integration to work with RulesetForClientsideMessagesAttribute, like MVC5
+Resolved issue with auto generating property names for nested types in the CustomValidator when using AddFailure
+Resolved issue where Custom sync/async invocation caused a NullReferenceException
+Resolved an issue with AspNetCore clientside integration being resolved from the root-level service provider
+Allow string.Empty in OverridePropertyName
+
+7.1.1 - 25 July 2017
+Resolved issue where incorrect property name was generated when using RuleForEach combined with SetValidator
+Resolved an issue where nesting async validators inside DependentRules didn't wait for completion
+
+7.1 - 28 June 2017
+Merged pull request - improved messages in ShouldHaveChildValidator test extension
+Merged pull request - test helper works with nested properties
+Added additional overload of WithState that accepts a property value
+Fixed StringLengthFluentValidationPropertyValidator generating the wrong comparison values when used in conjunction with the MaxLengthValidator and MinLengthValidator
+*Breaking change* Signature change of PropertyValidator.CustomStateProvider
+Add new RuleFor().Custom validator method as a replacement of the root-level Custom method
+AssemblyScanner now excludes abstract and generic types.
+Resolve issue with InvalidCastException when using lazy WithMessage with RuleForEach
+
+7.0.3 - 7 June 2017
+Added missing overload for WithMessage
+Ensure LanguageManager.Culture takes precedence over the current thread's culture
+
+7.0.2 - 26 May 2017
+Various fixes to clientside validation in asp.net core
+
+7.0.1 - 23 May 2017
+Improve message for MinimumLength and MaximumLength validators in English (other translations would be welcome).
+Added FluentValidationModelValidatorProvider.DisableDiscoveryOfPropertyValidators for backwards compatibility
+
+7.0 - 19 May 2017
+Switch to Netstandard based build process
+Deprecated IResourceAccessorBuilder and merged the functionality into LocalizedStringSource
+Deprecated all uses of expression-based localization. Use resourcename/resourcetype instead
+Resolved issue with possible NullReferenceException in the AspNetCore clientside integration for length validators
+Don't clear the ModelValidatorProviders collection by default in the AspNetCore integration (added new ClearValidatorProviders property to control this behaviour)
+Assemblies are now signed
+AssemblyVersion is no longer automatically incremented to avoid binding redirects
+Removed the old FluentValidation.snk and replaced with FluentValidation-dev.snk (nuget releases use a separate snk not stored in git)
+Ensure IValidatorFactory is resolved from request scope in asp.net core integration
+Rewrote the localization support not to require satellite assemblies
+Fix issue in WebApi integration where a property getter that throws an exception causes validation to fail
+Fix issue in AspNetCore integration where we tried to resolve a collection validator in some situations where a class validator should be used
+Improve SplitPascalCase method to support uppercase character sequences
+ValidationResult.ErrorCode property now always returns the type of the PropertyValidator that generated the message, unless it's been explicitly overriden
+Fix incorrect clientside validation attributes generated for email validator and credit card validator in the asp.net core integration
+Fix child model validation in webapi integration
+
+6.4.1 - 15 Mar 2017
+Resolve issue where the accessor cache would incorrectly cache certain expressions on method calls that return members
+Added the ability to disable the accessor cache
+
+6.4 - 3 Mar 2017
+AspNetCore support
+Performance improvements for validatior instantiation
+EnumValidator supports Flags
+Add ValidationSeverity
+Add support for collection validators on model-level rules
+Fixes/cleanup to RegexValidator and LengthValidator
+Async validators should run dependent rules
+Clearer exception message when passing a null instance into the root-level Validate method
+Additional overloads and clarity for WithMessage/WithLocalizedMessage overloads
+
+6.2.1 - 26 Feb 2016
+Fix DependentRules not working inside a top-level call to When
+Fix enum validator to work correctly with nullable enums
+
+6.2 - 22 Feb 2016
+Make ChildValidatorAdaptor.GetValidator public
+Make some of the private methods in FluentValidationModelValdiatorProvider protected instead of private
+ValidatorSelectors are now globally configurable through ValidatorOptions.ValidatorSelectors
+ValidatorSelectors can be overriden within the CustomizeValidatorAttribute
+Added "Include" statement
+Switched "dotnet" nuget library to uap10.0
+Add Enum validator
+
+6.1 - 18 Jan 2016
+Overload of ValidateAndThrow supports rulesets.
+Separate PCL to support Universal Win10 apps
+
+6.0.2 - 5 Jan 2016
+Fix issue with TestHelper not using correct overload.
+
+6.0 - 22 Dec 2015
+Core - Fixed DelegateValidator causes a deadlock when running an async function synchronously.
+Core - Fixed Equal/NotEqual not working with structs
+Core - Additional overload of SetValidator that takes a validatorProvider
+Core - Additional overloads for Length and Matches that take a func for accessing comparison properties
+Core - ValidationContext.IsChildContext is now public
+Core - Add support for non-integer indexers in child collections
+Core - Added Empty and Null validators (opposite of NotEmpty and NotNull)
+Core - Add ErrorCode property
+Core - Add support for Dependent Rules
+Async - Added support for cancellation tokens
+Async - Add support for conditionals
+Async - Allow model-level rules with ValidateAsync
+Localization - added translations for Polish and simple Chinese
+Localization - Fixed name of Czech resource file
+MVC/WebApi - Allow ValidatorAttribute on method parameters
+WebApi - Add support for AddToModelState
+
+5.6.2 - 29 May 2015
+RegExValidator can now use a special {RegularExpression} placeholder in its error message.
+Fix two crashes when using the PCL build
+Fix issue with GetAssembly
+
+5.6 - 22 May 2015
+Patch - Added properties to Error that can be used to build customized message.
+Fixed issue where setting global resource provider isn't propogated to metadata, breaking client-side messages
+in some situations.
+Patch - allow spaces in credit card numbers
+Added Support model level-rules with RuleFor(x => x)
+Fixed issue with PropertyChain not handling nulls/empty strings properly
+Added support for rule dependencies
+Added ValidatorDescriptor.GetRulesByRuleset
+
+5.5 - 30 Oct 2014
+Patch - Added optional RuleSet arguments to the validation test extensions.
+Patch - Support MVC4/5 client-side validation for GreaterThanOrEqualToValidator
+Patch - Support MVC4/5 client-side validation for LessThanOrEqualValidator
+Patch - Remove duplication in Min/MaxFluentValidationPropertyValidator
+Patch -  Async validation for ChildCollectionValidatorAdaptor
+Update nuget package for wpa81
+
+5.4 - 03 Jul 2014
+* Applied patch - Danish translation
+* Applied patch - Improve DisplayName resolution performance
+* Update WebApi/MVC dependencies
+
+5.3 - 27 May 2014
+* Fix issue https://fluentvalidation.codeplex.com/workitem/7183 (email address validation)
+
+5.2 - 21 May 2014
+* Added Czech and Finish translation of default error messages
+* Allow nullable target properties for greater/less validators
+* Apply pull request: RuleForEach doesn't respect When condition
+
+5.1 - 11 Mar 2014
 * Applied pull request: Apply the same display name resolving to the target property as to the source property.
 * Applied pull request: Allow parent to be passed to child collection validator
 * Applied pull request: Implement Async validation
+* Applied pull request: Split WebApi into separate project
+* Drop support for MVC 3
 
-5.0 - 24/10/2013 
+5.0 - 24 Oct 2013
 * Display name is now lazily-loaded by default (as a result, localization via DisplayAttribute now works correctly)
 * Added WebApi integration (contributed by dmorganb)
 * Support for MVC 5 (package names are FluentValidation.Mvc5 and FluentValidation.Mvc5-signed)
 * Remove support for partial trust
 
-4.0 - 29/04/2013 
+4.0 - 29 Apr 2013
 * Add portable class library and deprecate the Silverlight-specific projects
 * Added scale precision validator (thanks to Matthew Leibowitz)
 * Added the ability to replace property rules (thanks to Matthew Leibowitz)
@@ -24,7 +293,7 @@
 * *Breaking* Change default error messages for Equal/NotEqual validators to use {ComparisonValue} rather than {PropertyValue} for consistency.
 * All validators can now access the current property value inside the error message using {PropertyValue}
 
-3.4 - 17/08/2012
+3.4 - 17 Aug 2012
 * Make ValidationResut.IsValid virtual
 * Add private no-arg ctor to ValidationFailure to help with serialization
 * Add Turkish error messages
@@ -129,7 +398,7 @@
 * Ported 1.2 codebase to Silverlight 4.
 
 1.2 - March 11 2010
-* Re-enabled MVC1 integration. 
+* Re-enabled MVC1 integration.
 * Tweak ModelValidator behaviour so that all errors are run in one go (again)
 * Added AssemblyScanner.
 * Upgraded to MVC2 RTM.
@@ -160,7 +429,7 @@
 * Updated Silverlight project for Silverlight 3.
 * Added the OnAnyFailure method. This delegate will be invoked if any rule attached to a particular RuleBuilder fails.
 * Added ExactLengthValidator (error message needs localising...)
-* Patch - Swedish language resources 
+* Patch - Swedish language resources
 * Added WithPropertyName
 * Patch - InclusiveBetween/ExclusiveBetween validators.
 * **Breaking Change** Removed generics from all the IPropertyValidator instances.
@@ -184,18 +453,18 @@
 * Patch - Dutch language resources
 * Deleting the deprecated 'And' operator
 * Major refactoring of the fluent interface.
-* Adding an additional overload of Validate to IValidator<T> that takes an IValidatorSelector. 
+* Adding an additional overload of Validate to IValidator<T> that takes an IValidatorSelector.
 * Removing the IValidatorOfProperties interface
-* Moved the methods that were on IValidatorOfProperties to extension methods on IValidator 
+* Moved the methods that were on IValidatorOfProperties to extension methods on IValidator
 * AbstractValidator now holds a collection of PropertyRules directly, rather than storing the intermediate RuleBuilders.
 * Introduced the PropertyModel
 * Marking AbstractValidator.CreateDescriptor as virtual.
 * Adding a protected Rules property to ValidatorDescriptor.
-* Allow a custom message to be definied in the ValidationMessageAttribute in addition to a resource key. 
+* Allow a custom message to be definied in the ValidationMessageAttribute in addition to a resource key.
 
 1.1 beta 2 - Jun 10 2009
 * Added support for validating nested collections
-* Implemented issue #4446: Additional property values can be accessed from within custom validation messages. 
+* Implemented issue #4446: Additional property values can be accessed from within custom validation messages.
 * *Breaking Change* Validation messages now use custom placeholders such as {PropertyName} rather than {0}, {1} etc. This means that custom validation messages arguments now start at 0.
 * Added a ValidationMessage attribute which can be applied to property validator classes to specify the resource key to use when looking up the error message from the DefaultResourceManager.
 * Now using a more comprehensive regular expression in the EmailValidator.
@@ -239,5 +508,5 @@
 * AbstractValidator now implements IEnumerable<IRuleBuilder<T>>
 * Added ShouldHaveValidationError extension method for testing validators
 
-0.1 - Nov 1 2008 
+0.1 - Nov 1 2008
 * First public preview

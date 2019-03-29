@@ -13,10 +13,12 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation {
+	using System;
+
 	/// <summary>
 	/// Validator implementation that allows rules to be defined without inheriting from AbstractValidator.
 	/// </summary>
@@ -36,14 +38,9 @@ namespace FluentValidation {
 	/// <typeparam name="T"></typeparam>
 	public class InlineValidator<T> : AbstractValidator<T> {
 		/// <summary>
-		/// Delegate that specifies configuring an InlineValidator.
-		/// </summary>
-		public delegate IRuleBuilderOptions<T, TProperty> InlineRuleCreator<TProperty>(InlineValidator<T> validator);
-
-		/// <summary>
 		/// Allows configuration of the validator.
 		/// </summary>
-		public void Add<TProperty>(InlineRuleCreator<TProperty> ruleCreator) {
+		public void Add<TProperty>(Func<InlineValidator<T>, IRuleBuilderOptions<T, TProperty>> ruleCreator) {
 			ruleCreator(this);
 		}
 	}

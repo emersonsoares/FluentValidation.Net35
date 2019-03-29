@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FluentValidation": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\devenv.exe"
+    }
+  }
+}

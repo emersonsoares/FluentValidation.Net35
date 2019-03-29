@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Internal {
@@ -26,14 +26,20 @@ namespace FluentValidation.Internal {
 	/// Selects validators that are associated with a particular property.
 	/// </summary>
 	public class MemberNameValidatorSelector : IValidatorSelector {
-		readonly IEnumerable<string> memberNames;
+		internal const string DisableCascadeKey = "_FV_DisableSelectorCascadeForChildRules";
+		readonly IEnumerable<string> _memberNames;
 
 		/// <summary>
 		/// Creates a new instance of MemberNameValidatorSelector.
 		/// </summary>
 		public MemberNameValidatorSelector(IEnumerable<string> memberNames) {
-			this.memberNames = memberNames;
+			_memberNames = memberNames;
 		}
+
+		/// <summary>
+		/// Member names that are validated.
+		/// </summary>
+		public IEnumerable<string> MemberNames => _memberNames;
 
 		/// <summary>
 		/// Determines whether or not a rule should execute.
@@ -46,7 +52,12 @@ namespace FluentValidation.Internal {
 			// Validator selector only applies to the top level.
  			// If we're running in a child context then this means that the child validator has already been selected
 			// Because of this, we assume that the rule should continue (ie if the parent rule is valid, all children are valid)
-			return context.IsChildContext || memberNames.Any(x => x == propertyPath || propertyPath.StartsWith(x + "."));
+			bool isChildContext = context.IsChildContext;
+			bool cascadeEnabled = !context.RootContextData.ContainsKey(DisableCascadeKey);
+			
+			return (isChildContext && cascadeEnabled && !_memberNames.Any(x => x.Contains("."))) 
+			       || rule is IncludeRule 
+			       || ( _memberNames.Any(x => x == propertyPath || propertyPath.StartsWith(x + ".") || x.StartsWith(propertyPath + ".")));
 		}
 
 		///<summary>
@@ -57,11 +68,23 @@ namespace FluentValidation.Internal {
 			return new MemberNameValidatorSelector(members);
 		}
 
+		/// <summary>
+		/// Gets member names from expressions
+		/// </summary>
+		/// <param name="propertyExpressions"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public static string[] MemberNamesFromExpressions<T>(params Expression<Func<T, object>>[] propertyExpressions) {
+			var members = propertyExpressions.Select(MemberFromExpression).ToArray();
+			return members;
+		}
+
+
 		private static string MemberFromExpression<T>(Expression<Func<T, object>> expression) {
 			var chain = PropertyChain.FromExpression(expression);
 
 			if (chain.Count == 0) {
-				throw new ArgumentException(string.Format("Expression '{0}' does not specify a valid property or field.", expression));
+				throw new ArgumentException($"Expression '{expression}' does not specify a valid property or field.");
 			}
 
 			return chain.ToString();

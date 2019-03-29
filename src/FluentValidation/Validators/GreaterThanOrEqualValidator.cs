@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
@@ -23,19 +23,21 @@ namespace FluentValidation.Validators {
 	using Resources;
 
 	public class GreaterThanOrEqualValidator : AbstractComparisonValidator  {
-		public GreaterThanOrEqualValidator(IComparable value) : base(value, () => Messages.greaterthanorequal_error) {
+		public GreaterThanOrEqualValidator(IComparable value) : 
+			base(value, new LanguageStringSource(nameof(GreaterThanOrEqualValidator))) {
 		}
 
 		public GreaterThanOrEqualValidator(Func<object, object> valueToCompareFunc, MemberInfo member)
-			: base(valueToCompareFunc, member, () => Messages.greaterthanorequal_error) {
+			: base(valueToCompareFunc, member, new LanguageStringSource(nameof(GreaterThanOrEqualValidator))) {
 		}
 
 		public override bool IsValid(IComparable value, IComparable valueToCompare) {
+			if (valueToCompare == null)
+				return false;
+
 			return Comparer.GetComparisonResult(value, valueToCompare) >= 0;
 		}
 
-		public override Comparison Comparison {
-			get { return Validators.Comparison.GreaterThanOrEqual; }
-		}
+		public override Comparison Comparison => Validators.Comparison.GreaterThanOrEqual;
 	}
 }

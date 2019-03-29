@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Resources {
@@ -21,71 +21,77 @@ namespace FluentValidation.Resources {
 	using System.Linq.Expressions;
 	using System.Reflection;
 	using Internal;
+	using Validators;
 
 	/// <summary>
 	/// Represents a localized string.
 	/// </summary>
 	public class LocalizedStringSource : IStringSource {
-		readonly Func<string> accessor;
-		readonly Type resourceType;
-		readonly string resourceName;
+		readonly Func<string> _accessor;
 
 		/// <summary>
 		/// Creates a new instance of the LocalizedErrorMessageSource class using the specified resource name and resource type.
 		/// </summary>
 		/// <param name="resourceType">The resource type</param>
 		/// <param name="resourceName">The resource name</param>
-		/// <param name="resourceAccessorBuilder">Strategy used to construct the resource accessor</param>
-		public LocalizedStringSource(Type resourceType, string resourceName, IResourceAccessorBuilder resourceAccessorBuilder) {
-			this.resourceType = resourceType;
-			this.resourceName = resourceName;
-			this.accessor = resourceAccessorBuilder.GetResourceAccessor(resourceType, resourceName);
-		}
+		public LocalizedStringSource(Type resourceType, string resourceName) {
+			var resourceAccessor = BuildResourceAccessor(resourceType, resourceName);
 
-		/// <summary>
-		/// Creates an IErrorMessageSource from an expression: () => MyResources.SomeResourceName
-		/// </summary>
-		/// <param name="expression">The expression </param>
-		/// <param name="resourceProviderSelectionStrategy">Strategy used to construct the resource accessor</param>
-		/// <returns>Error message source</returns>
-		public static IStringSource CreateFromExpression(Expression<Func<string>> expression, IResourceAccessorBuilder resourceProviderSelectionStrategy) {
-			var constant = expression.Body as ConstantExpression;
-
-			if (constant != null) {
-				return new StaticStringSource((string)constant.Value);
-			}
-
-			var member = expression.GetMember();
-
-			if (member == null) {
-				throw new InvalidOperationException("Only MemberExpressions an be passed to BuildResourceAccessor, eg () => Messages.MyResource");
-			}
-
-			var resourceType = member.DeclaringType;
-			var resourceName = member.Name;
-			return new LocalizedStringSource(resourceType, resourceName, resourceProviderSelectionStrategy);
+			ResourceType = resourceAccessor.ResourceType;
+			ResourceName = resourceAccessor.ResourceName;
+			_accessor = resourceAccessor.Accessor;
 		}
 
 		/// <summary>
 		/// Construct the error message template
 		/// </summary>
 		/// <returns>Error message template</returns>
-		public string GetString() {
-			return accessor();
+		public string GetString(IValidationContext context) {
+			return _accessor();
 		}
 
 		/// <summary>
 		/// The name of the resource if localized.
 		/// </summary>
-		public string ResourceName {
-			get { return resourceName; }
-		}
+		public string ResourceName { get; }
 
 		/// <summary>
 		/// The type of the resource provider if localized.
 		/// </summary>
-		public Type ResourceType {
-			get { return resourceType; }
+		public Type ResourceType { get; }
+
+		protected virtual ResourceAccessor BuildResourceAccessor(Type resourceType, string resourceName) {
+			var property = GetResourceProperty(ref resourceType, ref resourceName);
+
+			if (property == null) {
+				throw new InvalidOperationException($"Could not find a property named '{resourceName}' on type '{resourceType}'.");
+			}
+
+			if (property.PropertyType != typeof(string)) {
+				throw new InvalidOperationException($"Property '{resourceName}' on type '{resourceType}' does not return a string");
+			}
+
+			var accessor =
+#if NET35
+             (Func<string>)property.GetGetMethod().CreateDelegate(typeof(Func<string>));
+#else
+			 (Func<string>)property.GetMethod.CreateDelegate(typeof(Func<string>));
+#endif
+
+			return new ResourceAccessor {
+				Accessor = accessor,
+				ResourceName = resourceName,
+				ResourceType = resourceType
+			};
+		}
+
+		/// <summary>
+		/// Gets the PropertyInfo for a resource.
+		/// ResourceType and ResourceName are ref parameters to allow derived types
+		/// to replace the type/name of the resource before the delegate is constructed.
+		/// </summary>
+		protected virtual PropertyInfo GetResourceProperty(ref Type resourceType, ref string resourceName) {
+			return resourceType.GetRuntimeProperty(resourceName);
 		}
 	}
 }

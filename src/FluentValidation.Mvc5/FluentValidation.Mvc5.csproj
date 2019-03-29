@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <AssemblyName>FluentValidation.Mvc</AssemblyName>
+    <RootNamespace>FluentValidation.Mvc</RootNamespace>
+    <PackageId>FluentValidation.Mvc5</PackageId>
+    <Authors>Jeremy Skinner</Authors>
+    <Company />
+    <Description>ASP.NET MVC 5 integration for FluentValidation</Description>
+    <Copyright>Copyright (c) Jeremy Skinner 2008-2018</Copyright>
+    <PackageLicenseUrl>https://github.com/JeremySkinner/FluentValidation/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://fluentvalidation.net</PackageProjectUrl>
+    <PackageIconUrl>https://fluentvalidation.net/assets/images/logo/fluent-validation-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt</PackageReleaseNotes>
+    <NeutralLanguage>en</NeutralLanguage>
+    <RepositoryUrl>http://github.com/JeremySkinner/fluentvalidation</RepositoryUrl>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <Version Condition="'$(Mvc5Version)'!=''">$(Mvc5Version)</Version>
+    <!-- Signining is only performed as part of the release build -->
+    <SignAssembly Condition="'$(AssemblyOriginatorKeyFile)'!=''">True</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' and '$(AssemblyOriginatorKeyFile)'!=''">True</PublicSign>
+
+    <DocumentationFile Condition="'$(Configuration)'=='Release'">bin\$(Configuration)\$(TargetFramework)\FluentValidation.Mvc.xml</DocumentationFile>
+	  <PackageReleaseNotes>
+Changes in 8.1:
+* Added the Skip property to the CustomizeValidatorAttribute to bring parity with the ASP.NET Core integration.
+
+Changes in 7.5:
+* Better handling of clientside messages when using custom overriden language resources
+* Added flag in the ValidationContext's RootDataContext when a validator is invoked by the automatic MVC/WebApi integration
+
+	Changes in 7.4:
+	* Added SetRulesetForClientsideMessages method as an alternative to using the RulesetForClientSideMessagesAttribute
+	* Updated the MVC5 AddToModelState extension not to overwrite existing attempted values
+
+	Full release notes can be found at https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt
+		</PackageReleaseNotes>
+      <DebugType>embedded</DebugType>
+      <LangVersion>7.3</LangVersion>
+	</PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.0" />
+  </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FluentValidation\FluentValidation.csproj" />
+      <ProjectReference Include="..\FluentValidation.ValidatorAttribute\FluentValidation.ValidatorAttribute.csproj" />
+    </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <Import Project="../netfx.props" />
+</Project>

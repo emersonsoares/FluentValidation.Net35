@@ -1,4 +1,5 @@
 #region License
+
 // Copyright (c) Jeremy Skinner (http://www.jeremyskinner.co.uk)
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -13,56 +14,78 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
+
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
+	using FluentValidation.Internal;
 	using Resources;
 	using Results;
 
 	public class DelegatingValidator : IPropertyValidator, IDelegatingValidator {
-		private readonly Func<object, bool> condition;
+		private readonly Func<PropertyValidatorContext, bool> _condition;
+		private readonly Func<PropertyValidatorContext, CancellationToken, Task<bool>> _asyncCondition;
 		public IPropertyValidator InnerValidator { get; private set; }
 
-		public DelegatingValidator(Func<object, bool> condition, IPropertyValidator innerValidator) {
-			this.condition = condition;
+		public bool ShouldValidateAsync(ValidationContext context) {
+			return InnerValidator.ShouldValidateAsync(context) || _asyncCondition != null;
+		}
+
+		public DelegatingValidator(Func<PropertyValidatorContext, bool> condition, IPropertyValidator innerValidator) {
+			_condition = condition;
+			_asyncCondition = null;
 			InnerValidator = innerValidator;
 		}
 
-		public IStringSource ErrorMessageSource {
-			get { return InnerValidator.ErrorMessageSource; }
-			set { InnerValidator.ErrorMessageSource = value; }
+		public DelegatingValidator(Func<PropertyValidatorContext, CancellationToken, Task<bool>> asyncCondition, IPropertyValidator innerValidator) {
+			_condition = _ => true;
+			_asyncCondition = asyncCondition;
+			InnerValidator = innerValidator;
 		}
-
+		
 		public IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context) {
-			if (condition(context.Instance)) {
+			if (_condition(context)) {
 				return InnerValidator.Validate(context);
 			}
+
 			return Enumerable.Empty<ValidationFailure>();
 		}
 
-		public ICollection<Func<object, object, object>> CustomMessageFormatArguments {
-			get { return InnerValidator.CustomMessageFormatArguments; }
+		public async Task<IEnumerable<ValidationFailure>> ValidateAsync(PropertyValidatorContext context, CancellationToken cancellation) {
+			if (!_condition(context))
+				return Enumerable.Empty<ValidationFailure>();
+
+			if (_asyncCondition == null)
+				return await InnerValidator.ValidateAsync(context, cancellation);
+
+			bool shouldValidate = await _asyncCondition(context, cancellation);
+
+			if (shouldValidate) {
+				return await InnerValidator.ValidateAsync(context, cancellation);
+			}
+
+			return Enumerable.Empty<ValidationFailure>();
 		}
 
-		public bool SupportsStandaloneValidation {
-			get { return false; }
+		public bool SupportsStandaloneValidation => false;
+
+		IPropertyValidator IDelegatingValidator.InnerValidator => InnerValidator;
+
+		public bool CheckCondition(PropertyValidatorContext context) {
+			return _condition(context);
 		}
 
-		public Func<object, object> CustomStateProvider {
-			get { return InnerValidator.CustomStateProvider; }
-			set { InnerValidator.CustomStateProvider = value; }
-		}
-
-		IPropertyValidator IDelegatingValidator.InnerValidator {
-			get { return InnerValidator; }
-		}
+		public PropertyValidatorOptions Options => InnerValidator.Options;
 	}
 
 	public interface IDelegatingValidator : IPropertyValidator {
 		IPropertyValidator InnerValidator { get; }
+		bool CheckCondition(PropertyValidatorContext context);
 	}
 }

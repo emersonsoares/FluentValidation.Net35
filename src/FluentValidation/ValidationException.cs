@@ -1,19 +1,19 @@
 #region License
 // Copyright (c) Jeremy Skinner (http://www.jeremyskinner.co.uk)
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-// 
-// http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 // limitations under the License.
-// 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+//
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation {
@@ -21,17 +21,65 @@ namespace FluentValidation {
 	using System.Collections.Generic;
 	using Results;
 	using System.Linq;
-
+#if !NETSTANDARD1_1 && !NETSTANDARD1_6
+	using System.Runtime.Serialization;
+#endif
+	/// <summary>
+	/// An exception that represents failed validation
+	/// </summary>
+#if !NETSTANDARD1_1 && !NETSTANDARD1_6
+	[Serializable]
+#endif
 	public class ValidationException : Exception {
+		/// <summary>
+		/// Validation errors
+		/// </summary>
 		public IEnumerable<ValidationFailure> Errors { get; private set; }
 
-		public ValidationException(IEnumerable<ValidationFailure> errors) : base(BuildErrorMesage(errors)) {
+		/// <summary>
+		/// Creates a new ValidationException
+		/// </summary>
+		/// <param name="message"></param>
+	    public ValidationException(string message) : this(message, Enumerable.Empty<ValidationFailure>()) {
+
+	    }
+
+		/// <summary>
+		/// Creates a new ValidationException
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="errors"></param>
+		public ValidationException(string message, IEnumerable<ValidationFailure> errors) : base(message) {
+			Errors = errors;
+		}
+		/// <summary>
+		/// Creates a new ValidationException
+		/// </summary>
+		/// <param name="errors"></param>
+		public ValidationException(IEnumerable<ValidationFailure> errors) : base(BuildErrorMessage(errors)) {
 			Errors = errors;
 		}
 
-		private static string BuildErrorMesage(IEnumerable<ValidationFailure> errors) {
-			var arr = errors.Select(x => "\r\n -- " + x.ErrorMessage).ToArray();
-			return "Validation failed: " + string.Join("", arr);
+		private static string BuildErrorMessage(IEnumerable<ValidationFailure> errors) {
+			var arr = errors.Select(x => $"{Environment.NewLine} -- {x.PropertyName}: {x.ErrorMessage}");
+#if NET35
+			return "Validation failed: " + string.Join(string.Empty, arr.ToArray());
+#else
+			return "Validation failed: " + string.Join(string.Empty, arr);
+#endif
 		}
+
+#if !NETSTANDARD1_1 && !NETSTANDARD1_6
+		public ValidationException(SerializationInfo info, StreamingContext context) : base(info, context) {
+			Errors = info.GetValue("errors", typeof(IEnumerable<ValidationFailure>)) as IEnumerable<ValidationFailure>;
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			if (info == null) throw new ArgumentNullException("info");
+
+			info.AddValue("errors", Errors);
+			base.GetObjectData(info, context);
+		}
+#endif
 	}
 }

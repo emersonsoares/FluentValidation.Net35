@@ -13,19 +13,21 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Tests {
 	using System;
+	using System.Linq;
 	using Internal;
-	using NUnit.Framework;
+	using Validators;
+	using Xunit;
 
-	[TestFixture]
+	
 	public class RulesetTests {
 
 
-		[Test]
+		[Fact]
 		public void Executes_rules_in_specified_ruleset() {
 			var validator = new TestValidator();
 			var result = validator.Validate(new ValidationContext<Person>(new Person(), new PropertyChain(), new RulesetValidatorSelector("Names")));
@@ -33,7 +35,7 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(2); // 2 rules in this ruleset
 		}
 
-		[Test]
+		[Fact]
 		public void Executes_rules_not_specified_in_ruleset() {
 			var validator = new TestValidator();
 			var result = validator.Validate(new Person());
@@ -41,7 +43,7 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(1); // 1 rule not inside a ruleset
 		}
 
-		[Test]
+		[Fact]
 		public void Ruleset_cascades_to_child_validator() {
 			var addressValidator = new InlineValidator<Address>();
 			addressValidator.RuleSet("Test", () => {
@@ -64,7 +66,7 @@ namespace FluentValidation.Tests {
 		
 		}
 
-		[Test]
+		[Fact]
 		public void Ruleset_cascades_to_child_collection_validator() {
 			var orderValidator = new InlineValidator<Order>();
 			orderValidator.RuleSet("Test", () => {
@@ -87,7 +89,7 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(2); //one for each order
 		}
 
-		[Test]
+		[Fact]
 		public void Executes_multiple_rulesets() {
 			var validator = new TestValidator();
 			validator.RuleSet("Id", () => {
@@ -100,7 +102,7 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(3);
 		}
 
-		[Test]
+		[Fact]
 		public void Executes_all_rules() {
 			var validator = new TestValidator();
 			var person = new Person();
@@ -108,7 +110,7 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(3);
 		}
 
-		[Test]
+		[Fact]
 		public void Executes_rules_in_default_ruleset_and_specific_ruleset() {
 			var validator = new TestValidator();
 			validator.RuleSet("foo", () => {
@@ -120,6 +122,100 @@ namespace FluentValidation.Tests {
 
 		}
 
+		[Fact]
+		public void WithMessage_works_inside_rulesets() {
+			var validator = new TestValidator2();
+			var result = validator.Validate(new Person(), ruleSet: "Names");
+			Assert.Equal("foo", result.Errors[0].ErrorMessage);
+		}
+
+		[Fact]
+		public void Ruleset_selection_should_not_cascade_downwards_when_set_on_property() {
+			var validator = new TestValidator4();
+			var result = validator.Validate(new PersonContainer() { Person = new Person() }, ruleSet: "Names");
+			result.IsValid.ShouldBeTrue();
+		}
+
+		[Fact]
+		public void Ruleset_selection_should_cascade_downwards_with_when_setting_child_validator_using_include_statement() {
+			var validator = new TestValidator3();
+			var result = validator.Validate(new Person(), ruleSet:"Names");
+			result.IsValid.ShouldBeFalse();
+		}
+
+		[Fact]
+		public void Ruleset_selection_should_cascade_downwards_with_when_setting_child_validator_using_include_statement_with_lambda() {
+			var validator = new InlineValidator<Person>();
+			validator.Include(x => new TestValidator2());
+			var result = validator.Validate(new Person(), ruleSet:"Names");
+			result.IsValid.ShouldBeFalse();
+		}
+
+		
+		[Fact]
+		public void Trims_spaces() {
+			var validator = new InlineValidator<Person>();
+			validator.RuleSet("First", () => {
+				validator.RuleFor(x => x.Forename).NotNull();
+			});
+			validator.RuleSet("Second", () => {
+				validator.RuleFor(x => x.Surname).NotNull();
+			});
+
+			var result = validator.Validate(new Person(), ruleSet: "First, Second");
+			result.Errors.Count.ShouldEqual(2);
+		}
+
+		[Fact]
+		public void Applies_multiple_rulesets_to_rule() {
+			var validator = new InlineValidator<Person>();
+			validator.RuleSet("First, Second", () => {
+				validator.RuleFor(x => x.Forename).NotNull();
+			});
+
+			var result = validator.Validate(new Person(), ruleSet: "First");
+			result.Errors.Count.ShouldEqual(1);
+
+			result = validator.Validate(new Person(), ruleSet: "Second");
+			result.Errors.Count.ShouldEqual(1);
+
+			result = validator.Validate(new Person(), ruleSet: "Third");
+			result.Errors.Count.ShouldEqual(0);
+
+			result = validator.Validate(new Person());
+			result.Errors.Count.ShouldEqual(0);
+		}
+
+		[Fact]
+		public void Executes_in_rule_in_ruleset_and_default() {
+			var validator = new InlineValidator<Person>();
+			validator.RuleSet("First, Default", () => {
+				validator.RuleFor(x => x.Forename).NotNull();
+			});
+
+			var result = validator.Validate(new Person(), ruleSet: "First");
+			result.Errors.Count.ShouldEqual(1);
+
+			result = validator.Validate(new Person(), ruleSet: "Second");
+			result.Errors.Count.ShouldEqual(0);
+
+			result = validator.Validate(new Person());
+			result.Errors.Count.ShouldEqual(1);
+		}
+
+		[Fact]
+		public void Executes_in_rule_in_default_and_none() {
+			var validator = new InlineValidator<Person>();
+			validator.RuleSet("First, Default", () => {
+				validator.RuleFor(x => x.Forename).NotNull();
+			});
+			validator.RuleFor(x => x.Forename).NotNull();
+
+			var result = validator.Validate(new Person(), ruleSet: "default");
+			result.Errors.Count.ShouldEqual(2);
+		}
+
+
 		private class TestValidator : AbstractValidator<Person> {
 			public TestValidator() {
 				RuleSet("Names", () => {
@@ -129,8 +225,38 @@ namespace FluentValidation.Tests {
 
 				RuleFor(x => x.Id).NotEmpty();
 			}
+		}
+
+		private class TestValidator2 : AbstractValidator<Person>
+		{
+			public TestValidator2()
+			{
+				RuleSet("Names", () => {
+					RuleFor(x => x.Surname).NotNull().WithMessage("foo");
+				});
+
+			}
 
 		}
 
+
+		public class TestValidator3 : AbstractValidator<Person> {
+			public TestValidator3() {
+				Include(new TestValidator2());
+			}
+		}
+
+
+		public class PersonContainer {
+			public Person Person { get; set; }
+		}
+
+		public class TestValidator4 : AbstractValidator<PersonContainer>
+		{
+			public TestValidator4()
+			{
+				RuleFor(x => x.Person).SetValidator(new TestValidator2());
+			}
+		}
 	}
 }

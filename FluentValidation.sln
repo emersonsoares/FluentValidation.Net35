@@ -1,31 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3906F280-A567-4AD7-A0EF-7253E95E7852}"
 	ProjectSection(SolutionItems) = preProject
-		FluentValidation.snk = FluentValidation.snk
+		.editorconfig = .editorconfig
+		Changelog.txt = Changelog.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation", "src\FluentValidation\FluentValidation.csproj", "{DAE0249B-4F69-4AC9-9A17-AA23E0795316}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.Tests", "src\FluentValidation.Tests\FluentValidation.Tests.csproj", "{E353A6E3-5404-4E1E-B33D-4C7BAE646752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.Tests", "src\FluentValidation.Tests\FluentValidation.Tests.csproj", "{E353A6E3-5404-4E1E-B33D-4C7BAE646752}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.Tests.Mvc5", "src\FluentValidation.Tests.Mvc5\FluentValidation.Tests.Mvc5.csproj", "{8FF90023-30A2-410D-A735-498878BDA168}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2AE2DFF6-ACA8-4970-ABE2-403563F8EA03}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.Tests.WebApi", "src\FluentValidation.Tests.WebApi\FluentValidation.Tests.WebApi.csproj", "{5BA9F9F4-E12A-4A2E-B05C-FABAA6CAD1D1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{0216F6B1-740F-49D6-87CC-40726E29C7BA}"
-	ProjectSection(SolutionItems) = preProject
-		.build\build.proj = .build\build.proj
-		Build.proj = Build.proj
-		.build\MSBuild.Community.Tasks.dll = .build\MSBuild.Community.Tasks.dll
-		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.AspNetCore", "src\FluentValidation.AspNetCore\FluentValidation.AspNetCore.csproj", "{D8A44C11-51B8-4AA1-9391-C4F89078181C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation", "src\FluentValidation\FluentValidation.csproj", "{9DB6A8B4-5C9A-4CA1-96A5-4E1E4C3A9A44}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.Mvc5", "src\FluentValidation.Mvc5\FluentValidation.Mvc5.csproj", "{028C9E3F-D7C8-41BE-A840-70D42DFC5A8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentValidation.WebApi", "src\FluentValidation.WebApi\FluentValidation.WebApi.csproj", "{9D1DC734-F71F-4587-B54C-697F0B5872AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.Tests.AspNetCore", "src\FluentValidation.Tests.AspNetCore\FluentValidation.Tests.AspNetCore.csproj", "{3DFE3035-9685-4B76-AF21-074BCD8F69B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentValidation.ValidatorAttribute", "src\FluentValidation.ValidatorAttribute\FluentValidation.ValidatorAttribute.csproj", "{7898B305-C18A-415F-A676-96D6593383B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,16 +33,47 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DAE0249B-4F69-4AC9-9A17-AA23E0795316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAE0249B-4F69-4AC9-9A17-AA23E0795316}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAE0249B-4F69-4AC9-9A17-AA23E0795316}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAE0249B-4F69-4AC9-9A17-AA23E0795316}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E353A6E3-5404-4E1E-B33D-4C7BAE646752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E353A6E3-5404-4E1E-B33D-4C7BAE646752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E353A6E3-5404-4E1E-B33D-4C7BAE646752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E353A6E3-5404-4E1E-B33D-4C7BAE646752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF90023-30A2-410D-A735-498878BDA168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF90023-30A2-410D-A735-498878BDA168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF90023-30A2-410D-A735-498878BDA168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF90023-30A2-410D-A735-498878BDA168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BA9F9F4-E12A-4A2E-B05C-FABAA6CAD1D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BA9F9F4-E12A-4A2E-B05C-FABAA6CAD1D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BA9F9F4-E12A-4A2E-B05C-FABAA6CAD1D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9F9F4-E12A-4A2E-B05C-FABAA6CAD1D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8A44C11-51B8-4AA1-9391-C4F89078181C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8A44C11-51B8-4AA1-9391-C4F89078181C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8A44C11-51B8-4AA1-9391-C4F89078181C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8A44C11-51B8-4AA1-9391-C4F89078181C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DB6A8B4-5C9A-4CA1-96A5-4E1E4C3A9A44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DB6A8B4-5C9A-4CA1-96A5-4E1E4C3A9A44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DB6A8B4-5C9A-4CA1-96A5-4E1E4C3A9A44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DB6A8B4-5C9A-4CA1-96A5-4E1E4C3A9A44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{028C9E3F-D7C8-41BE-A840-70D42DFC5A8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{028C9E3F-D7C8-41BE-A840-70D42DFC5A8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{028C9E3F-D7C8-41BE-A840-70D42DFC5A8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{028C9E3F-D7C8-41BE-A840-70D42DFC5A8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1DC734-F71F-4587-B54C-697F0B5872AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1DC734-F71F-4587-B54C-697F0B5872AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1DC734-F71F-4587-B54C-697F0B5872AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1DC734-F71F-4587-B54C-697F0B5872AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DFE3035-9685-4B76-AF21-074BCD8F69B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DFE3035-9685-4B76-AF21-074BCD8F69B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DFE3035-9685-4B76-AF21-074BCD8F69B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DFE3035-9685-4B76-AF21-074BCD8F69B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7898B305-C18A-415F-A676-96D6593383B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7898B305-C18A-415F-A676-96D6593383B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7898B305-C18A-415F-A676-96D6593383B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7898B305-C18A-415F-A676-96D6593383B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33CD33AF-2F26-44A0-BA94-F9299272362B}
 	EndGlobalSection
 EndGlobal

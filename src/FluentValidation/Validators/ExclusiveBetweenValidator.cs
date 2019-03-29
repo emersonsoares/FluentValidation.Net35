@@ -13,28 +13,26 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
-	using Attributes;
 	using Internal;
 	using Resources;
 
 	public class ExclusiveBetweenValidator : PropertyValidator, IBetweenValidator {
-		public ExclusiveBetweenValidator(IComparable from, IComparable to) : base(() => Messages.exclusivebetween_error) {
+		public ExclusiveBetweenValidator(IComparable from, IComparable to) : base(new LanguageStringSource(nameof(ExclusiveBetweenValidator))) {
 			To = to;
 			From = from;
 
 			if (Comparer.GetComparisonResult(to, from) == -1) {
-				throw new ArgumentOutOfRangeException("to", "To should be larger than from.");
+				throw new ArgumentOutOfRangeException(nameof(to), "To should be larger than from.");
 			}
 		}
 
-		public IComparable From { get; private set; }
-		public IComparable To { get; private set; }
-
+		public IComparable From { get; }
+		public IComparable To { get; }
 
 		protected override bool IsValid(PropertyValidatorContext context) {
 			var propertyValue = (IComparable)context.PropertyValue;

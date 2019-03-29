@@ -13,25 +13,25 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Tests {
 	using System.Collections.Generic;
 	using Internal;
-	using NUnit.Framework;
+	using Xunit;
 	using System.Linq;
 
-	[TestFixture]
+	
 	public class TrackingCollectionTests {
-		[Test]
+		[Fact]
 		public void Add_AddsItem() {
 			var items = new TrackingCollection<string>();
 			items.Add("foo");
 			items.Single().ShouldEqual("foo");
 		}
 
-		[Test]
+		[Fact]
 		public void When_Item_Added_Raises_ItemAdded() {
 			string addedItem = null;
 			var items = new TrackingCollection<string>();
@@ -43,7 +43,7 @@ namespace FluentValidation.Tests {
 			addedItem.ShouldEqual("foo");
 		}
 
-		[Test]
+		[Fact]
 		public void Should_not_raise_event_once_handler_detached() {
 			var addedItems = new List<string>();
 			var items = new TrackingCollection<string>();
