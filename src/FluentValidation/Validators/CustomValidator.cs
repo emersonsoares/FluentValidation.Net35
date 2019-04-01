@@ -33,6 +33,7 @@
 		public CustomValidator(Func<T, CustomContext, CancellationToken, Task> asyncAction) : base(string.Empty) {
 			_isAsync = true;
 			_asyncAction = asyncAction;
+			//TODO: For FV 9, throw an exception by default if async validator is being executed synchronously.
 			_action = (x, ctx) =>
 #if NET35
 			TaskEx.Run(

@@ -45,6 +45,7 @@ namespace FluentValidation.Validators {
 		}
 
 		protected override bool IsValid(PropertyValidatorContext context) {
+			//TODO: For FV 9, throw an exception by default if async validator is being executed synchronously.
 			return
 #if NET35
 			TaskEx.Run(

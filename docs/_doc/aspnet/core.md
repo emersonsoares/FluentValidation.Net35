@@ -1,5 +1,14 @@
 ---
 title: ASP.NET Core
+sections:
+ - Implicit vs Explicit Child Property Validation
+ - Clientside Validation
+ - Manual validation
+ - Validator customization
+ - Validator Interceptors
+ - Specifying a RuleSet for client-side messages
+ - Injecting Child Validators
+ - Use with Page Models
 ---
 
 FluentValidation can be integrated with ASP.NET Core. Once enabled, MVC will use FluentValidation to validate objects that are passed in to controller actions by the model binding infrastructure.
@@ -266,3 +275,39 @@ public ActionResult Index() {
    return View(new PersonViewModel());
 }
 ```
+
+### Injecting Child Validators
+
+As an alternative to directly instantiating child validators, with the ASP.NET Core integration you can choose to inject them instead. This can be done via the validator's constructor:
+
+```csharp
+public class PersonValidator : AbstractValidator<Person> {
+  public PersonValidator(IValidator<Address> addressValidator) {
+    RuleFor(x => x.Address).SetValidator(addressValidator);
+  }
+}
+```
+
+Alternatively, as of version 8.2 you can call `InjectValidator` without having to use constructor injection:
+
+```csharp
+public class PersonValidator : AbstractValidator<Person> {
+  public PersonValidator() {
+    RuleFor(x => x.Address).InjectValidator();
+  }
+}
+```
+
+Note that in this case, FluentValidation will attempt to resolve an instance of `IValidator<T>` from ASP.NET's service collection, where `T` is the same type as the property being validated. If you need to explicitly specify the type, then this can be done with the other overload of `InjectValidator` which accepts a func referencing the service provider:
+
+```csharp
+public class PersonValidator : AbstractValidator<Person> {
+  public PersonValidator() {
+    RuleFor(x => x.Address).InjectValidator((services, context) => services.GetService<MyAddressValidator>());
+  }
+}
+```
+
+### Use with Page Models
+
+Configuration for use with ASP.NET Web Pages and PageModels is exactly the same as with MVC above. There is one limitation, in that you can't define a validator for the whole page-model, only for models exposed as properties on the page model. This is a limitation of ASP.NET Web Pages itself. 
