@@ -13,17 +13,22 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Internal {
 	using System;
 
+	/// <summary>
+	/// Custom logic for performing comparisons
+	/// </summary>
 	public static class Comparer {
 		/// <summary>
 		/// Tries to compare the two objects.
 		/// </summary>
+		/// <param name="valueToCompare"></param>
 		/// <param name="result">The resulting comparison value.</param>
+		/// <param name="value"></param>
 		/// <returns>True if all went well, otherwise False.</returns>
 		public static bool TryCompare(IComparable value, IComparable valueToCompare, out int result) {
 			try {

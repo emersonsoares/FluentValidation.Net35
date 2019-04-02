@@ -18,17 +18,19 @@
 
 namespace FluentValidation.Internal
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Results;
-    using Validators;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
+	using Results;
+	using Validators;
 
-    /// <summary>
-    /// Custom IValidationRule for performing custom logic.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class DelegateValidator<T> : IValidationRule
+	/// <summary>
+	/// Custom IValidationRule for performing custom logic.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class DelegateValidator<T> : IValidationRule
     {
         private readonly Func<T, ValidationContext<T>, IEnumerable<ValidationFailure>> func;
 
@@ -75,12 +77,14 @@ namespace FluentValidation.Internal
             get { yield break; }
         }
 
-        /// <summary>
-        /// Performs validation using a validation context and returns a collection of Validation Failures.
-        /// </summary>
-        /// <param name="context">Validation Context</param>
-        /// <returns>A collection of validation failures</returns>
-        public IEnumerable<ValidationFailure> Validate(ValidationContext context)
+		public string[] RuleSets { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+		/// <summary>
+		/// Performs validation using a validation context and returns a collection of Validation Failures.
+		/// </summary>
+		/// <param name="context">Validation Context</param>
+		/// <returns>A collection of validation failures</returns>
+		public IEnumerable<ValidationFailure> Validate(ValidationContext context)
         {
             if (!context.Selector.CanExecute(this, "", context) || !condition(context.InstanceToValidate))
             {
@@ -97,5 +101,20 @@ namespace FluentValidation.Internal
             var originalCondition = this.condition;
             this.condition = x => predicate(x) && originalCondition(x);
         }
-    }
+
+		public Task<IEnumerable<ValidationFailure>> ValidateAsync(ValidationContext context, CancellationToken cancellation)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ApplyCondition(Func<PropertyValidatorContext, bool> predicate, ApplyConditionTo applyConditionTo = ApplyConditionTo.AllValidators)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ApplyAsyncCondition(Func<PropertyValidatorContext, CancellationToken, Task<bool>> predicate, ApplyConditionTo applyConditionTo = ApplyConditionTo.AllValidators)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

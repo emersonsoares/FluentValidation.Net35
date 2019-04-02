@@ -13,32 +13,46 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
-	using System.Linq.Expressions;
 	using System.Reflection;
-	using Attributes;
 	using Internal;
-	using Results;
+	using Resources;
 
+	/// <summary>
+	/// Base class for all comparison validators
+	/// </summary>
 	public abstract class AbstractComparisonValidator : PropertyValidator, IComparisonValidator {
 
-		readonly Func<object, object> valueToCompareFunc;
+		readonly Func<object, object> _valueToCompareFunc;
 
-		protected AbstractComparisonValidator(IComparable value, Expression<Func<string>> errorMessageSelector) : base(errorMessageSelector) {
-			value.Guard("value must not be null.");
+		/// <summary>
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="errorSource"></param>
+		protected AbstractComparisonValidator(IComparable value, IStringSource errorSource) : base(errorSource) {
+			value.Guard("value must not be null.", nameof(value));
 			ValueToCompare = value;
 		}
 
-		protected AbstractComparisonValidator(Func<object, object> valueToCompareFunc, MemberInfo member, Expression<Func<string>> errorMessageSelector)
-			: base(errorMessageSelector) {
-			this.valueToCompareFunc = valueToCompareFunc;
+		/// <summary>
+		/// </summary>
+		/// <param name="valueToCompareFunc"></param>
+		/// <param name="member"></param>
+		/// <param name="errorSource"></param>
+		protected AbstractComparisonValidator(Func<object, object> valueToCompareFunc, MemberInfo member, IStringSource errorSource) : base(errorSource) { 
+			this._valueToCompareFunc = valueToCompareFunc;
 			this.MemberToCompare = member;
 		}
 
+		/// <summary>
+		/// Performs the comparison
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
 		protected sealed override bool IsValid(PropertyValidatorContext context) {
 			if(context.PropertyValue == null) {
 				// If we're working with a nullable type then this rule should not be applied.
@@ -50,32 +64,62 @@ namespace FluentValidation.Validators {
 
 			if (!IsValid((IComparable)context.PropertyValue, value)) {
 				context.MessageFormatter.AppendArgument("ComparisonValue", value);
+				context.MessageFormatter.AppendArgument("ComparisonProperty", MemberToCompare == null ? "" : MemberToCompare.Name);
 				return false;
 			}
 
 			return true;
 		}
 
-		private IComparable GetComparisonValue(PropertyValidatorContext context) {
-			if(valueToCompareFunc != null) {
-				return (IComparable)valueToCompareFunc(context.Instance);
+		public IComparable GetComparisonValue(PropertyValidatorContext context) {
+			if(_valueToCompareFunc != null) {
+				return (IComparable)_valueToCompareFunc(context.Instance);
 			}
 
 			return (IComparable)ValueToCompare;
 		}
 
+		/// <summary>
+		/// Override to perform the comparison
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="valueToCompare"></param>
+		/// <returns></returns>
 		public abstract bool IsValid(IComparable value, IComparable valueToCompare);
+
+		/// <summary>
+		/// Metadata- the comparison type
+		/// </summary>
 		public abstract Comparison Comparison { get; }
+		/// <summary>
+		/// Metadata- the member being compared
+		/// </summary>
 		public MemberInfo MemberToCompare { get; private set; }
+		/// <summary>
+		/// Metadata- the value being compared
+		/// </summary>
 		public object ValueToCompare { get; private set; }
 	}
 
+	/// <summary>
+	/// Defines a comparison validator
+	/// </summary>
 	public interface IComparisonValidator : IPropertyValidator {
+		/// <summary>
+		/// Metadata- the comparison type
+		/// </summary>
 		Comparison Comparison { get; }
+		/// <summary>
+		/// Metadata- the member being compared
+		/// </summary>
 		MemberInfo MemberToCompare { get; }
+		/// <summary>
+		/// Metadata- the value being compared
+		/// </summary>
 		object ValueToCompare { get; }
 	}
 
+#pragma warning disable 1591
 	public enum Comparison {
 		Equal,
 		NotEqual,
@@ -84,4 +128,6 @@ namespace FluentValidation.Validators {
 		GreaterThanOrEqual,
 		LessThanOrEqual
 	}
+#pragma warning restore 1591
+
 }

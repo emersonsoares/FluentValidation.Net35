@@ -13,37 +13,54 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Tests {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq.Expressions;
 	using Internal;
-	using NUnit.Framework;
+	using Xunit;
 
-	[TestFixture]
+	
 	public class ExtensionTester {
-		[Test]
+		[Fact]
 		public void Should_extract_member_from_member_expression() {
 			Expression<Func<Person, string>> expression = person => person.Surname;
 			var member = expression.GetMember();
 			member.Name.ShouldEqual("Surname");
 		}
 
-		[Test]
+		[Fact]
 		public void Should_return_null_for_non_member_expressions() {
 			Expression<Func<Person, string>> expression = person => "Foo";
 			expression.GetMember().ShouldBeNull();
 		}
 
-		[Test]
+		[Fact]
 		public void Should_split_pascal_cased_member_name() {
-			string name = "DateOfBirth".SplitPascalCase();
-			name.ShouldEqual("Date Of Birth");
+			var cases = new Dictionary<string, string> {
+				            {"DateOfBirth", "Date Of Birth"},
+				            {"DATEOFBIRTH", "DATEOFBIRTH"},
+				            {"dateOfBirth", "date Of Birth"},
+				            {"dateofbirth", "dateofbirth"},
+							{"Date_Of_Birth", "Date_ Of_ Birth"},
+							{"Name2", "Name2"},
+                           {"ProductID", "Product ID"},
+                           {"MyTVRemote", "My TV Remote"},
+                           {"TVRemote", "TV Remote"},
+                           {"XCopy", "X Copy"},
+                           {"ThisXCopy", "This X Copy"},
+						};
+
+			foreach (var @case in cases) {
+				string name = @case.Key.SplitPascalCase();
+				name.ShouldEqual(@case.Value);
+			}
 		}
 
-		[Test]
+		[Fact]
 		public void SplitPascalCase_should_return_null_when_input_is_null() {
 			Extensions.SplitPascalCase(null).ShouldBeNull();
 		}

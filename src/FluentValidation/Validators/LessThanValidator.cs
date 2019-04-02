@@ -13,26 +13,27 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
-	using System.Linq.Expressions;
 	using System.Reflection;
-	using Attributes;
 	using Internal;
 	using Resources;
 
 	public class LessThanValidator : AbstractComparisonValidator {
-		public LessThanValidator(IComparable value) : base(value, () => Messages.lessthan_error) {
+		public LessThanValidator(IComparable value) : base(value, new LanguageStringSource(nameof(LessThanValidator))) {
 		}
 
 		public LessThanValidator(Func<object, object> valueToCompareFunc, MemberInfo member)
-			: base(valueToCompareFunc, member, () => Messages.lessthan_error) {
+			: base(valueToCompareFunc, member, new LanguageStringSource(nameof(LessThanValidator))) {
 		}
 
 		public override bool IsValid(IComparable value, IComparable valueToCompare) {
+			if (valueToCompare == null)
+				return false;
+
 			return Comparer.GetComparisonResult(value, valueToCompare) < 0;
 		}
 

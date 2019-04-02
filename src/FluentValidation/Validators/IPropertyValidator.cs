@@ -13,34 +13,48 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
-namespace FluentValidation.Validators
-{
-    using System;
-    using System.Collections.Generic;
-    using Resources;
-    using Results;
+namespace FluentValidation.Validators {
+	using System;
+	using System.Collections.Generic;
+	using System.Threading;
+	using System.Threading.Tasks;
+	using Resources;
+	using Results;
 
-    /// <summary>
-    /// A custom property validator.
-    /// This interface should not be implemented directly in your code as it is subject to change.
-    /// Please inherit from <see cref="PropertyValidator">PropertyValidator</see> instead.
-    /// </summary>
-    public interface IPropertyValidator
-    {
-        IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context);
+	/// <summary>
+	/// A custom property validator.
+	/// This interface should not be implemented directly in your code as it is subject to change.
+	/// Please inherit from <see cref="PropertyValidator">PropertyValidator</see> instead.
+	/// </summary>
+	public interface IPropertyValidator {
+		/// <summary>
+		/// Performs validation
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context);
+		
+		/// <summary>
+		/// Performs validation asynchronously.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="cancellation"></param>
+		/// <returns></returns>
+		Task<IEnumerable<ValidationFailure>> ValidateAsync(PropertyValidatorContext context, CancellationToken cancellation);
 
-        /// <summary>
-        /// Custom message arguments. 
-        /// Arg 1: Instance being validated
-        /// Arg 2: Property value
-        /// </summary>
-        ICollection<Func<object, object, object>> CustomMessageFormatArguments { get; }
-
-        Func<object, object> CustomStateProvider { get; set; }
-
-        IStringSource ErrorMessageSource { get; set; }
-    }
+		/// <summary>
+		/// Determines whether this validator should be run asynchronously or not.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		bool ShouldValidateAsync(ValidationContext context);
+		
+		/// <summary>
+		/// Additional options for configuring the property validator.
+		/// </summary>
+		PropertyValidatorOptions Options { get; }
+	}
 }

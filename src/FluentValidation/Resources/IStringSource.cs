@@ -13,12 +13,13 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Resources {
 
 	using System;
+	using Validators;
 
 	/// <summary>
 	/// Provides error message templates
@@ -28,16 +29,18 @@ namespace FluentValidation.Resources {
 		/// Construct the error message template
 		/// </summary>
 		/// <returns>Error message template</returns>
-		string GetString();
+		string GetString(IValidationContext context);
 
 		/// <summary>
 		/// The name of the resource if localized.
 		/// </summary>
+		[Obsolete("ResourceName will be removed from IStringSource in FluentValidation 9.")]
 		string ResourceName { get; }
 
 		/// <summary>
 		/// The type of the resource provider if localized.
 		/// </summary>
+		[Obsolete("ResourceType will be removed from IStringSource in FluentValidation 9.")]
 		Type ResourceType { get; }
 	}
 }

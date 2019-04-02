@@ -13,34 +13,30 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Resources;
 	using Results;
 
 	public abstract class NoopPropertyValidator : IPropertyValidator {
-		public IStringSource ErrorMessageSource {
-			get { return null; }
-			set { }
-		}
-
 		public abstract IEnumerable<ValidationFailure> Validate(PropertyValidatorContext context);
 
-		public virtual ICollection<Func<object, object, object>> CustomMessageFormatArguments {
-			get { return new List<Func<object, object, object>>(); }
+#pragma warning disable 1998
+		public virtual async Task<IEnumerable<ValidationFailure>> ValidateAsync(PropertyValidatorContext context, CancellationToken cancellation) {
+			return Validate(context);
 		}
+#pragma warning restore 1998
 
-		public virtual bool SupportsStandaloneValidation {
-			get { return false; }
+		public virtual bool ShouldValidateAsync(ValidationContext context) {
+			return false;
 		}
-
-		public Func<object, object> CustomStateProvider {
-			get { return null; }
-			set { }
-		}
+		
+		public PropertyValidatorOptions Options { get; } = PropertyValidatorOptions.Empty;
 	}
 }

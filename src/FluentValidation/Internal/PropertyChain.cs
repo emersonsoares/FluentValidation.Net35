@@ -1,25 +1,24 @@
 #region License
 // Copyright (c) Jeremy Skinner (http://www.jeremyskinner.co.uk)
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); 
-// you may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at 
-// 
-// http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software 
-// distributed under the License is distributed on an "AS IS" BASIS, 
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and 
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
 // limitations under the License.
-// 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+//
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Internal {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Reflection;
 
@@ -27,7 +26,7 @@ namespace FluentValidation.Internal {
 	/// Represents a chain of properties
 	/// </summary>
 	public class PropertyChain {
-		readonly List<string> memberNames = new List<string>();
+		readonly List<string> _memberNames = new List<string>(2);
 
 		/// <summary>
 		/// Creates a new PropertyChain.
@@ -39,15 +38,25 @@ namespace FluentValidation.Internal {
 		/// Creates a new PropertyChain based on another.
 		/// </summary>
 		public PropertyChain(PropertyChain parent) {
-			if(parent != null) {
-				memberNames.AddRange(parent.memberNames);				
+			if(parent != null
+				&& parent._memberNames.Count > 0) {
+				_memberNames.AddRange(parent._memberNames);
 			}
 		}
 
+		/// <summary>
+		/// Creates a new PropertyChain
+		/// </summary>
+		/// <param name="memberNames"></param>
 		public PropertyChain(IEnumerable<string> memberNames) {
-			this.memberNames.AddRange(memberNames);
+			this._memberNames.AddRange(memberNames);
 		}
 
+		/// <summary>
+		/// Creates a PropertyChain from a lambda expression
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <returns></returns>
 		public static PropertyChain FromExpression(LambdaExpression expression) {
 			var memberNames = new Stack<string>();
 
@@ -74,7 +83,8 @@ namespace FluentValidation.Internal {
 		/// </summary>
 		/// <param name="member">Member to add</param>
 		public void Add(MemberInfo member) {
-			memberNames.Add(member.Name);
+			if(member != null)
+				_memberNames.Add(member.Name);
 		}
 
 		/// <summary>
@@ -82,32 +92,47 @@ namespace FluentValidation.Internal {
 		/// </summary>
 		/// <param name="propertyName">Name of the property to add</param>
 		public void Add(string propertyName) {
-			memberNames.Add(propertyName);
+			if(!string.IsNullOrEmpty(propertyName))
+				_memberNames.Add(propertyName);
 		}
 
 		/// <summary>
-		/// Adds an indexer to the property chain. For example, if the following chain has been constructed: 
+		/// Adds an indexer to the property chain. For example, if the following chain has been constructed:
 		/// Parent.Child
 		/// then calling AddIndexer(0) would convert this to:
 		/// Parent.Child[0]
 		/// </summary>
 		/// <param name="indexer"></param>
-		public void AddIndexer(object indexer) {
-			if(memberNames.Count == 0) {
+		/// <param name="surroundWithBrackets">Whether square brackets should be applied before and after the indexer. Default true.</param>
+		public void AddIndexer(object indexer, bool surroundWithBrackets = true) {
+			if(_memberNames.Count == 0) {
 				throw new InvalidOperationException("Could not apply an Indexer because the property chain is empty.");
 			}
 
-			string last = memberNames[memberNames.Count - 1];
-			last += "[" + indexer + "]";
+			string last = _memberNames[_memberNames.Count - 1];
+			last += surroundWithBrackets ? "[" + indexer + "]" : indexer;
 
-			memberNames[memberNames.Count - 1] = last;
+			_memberNames[_memberNames.Count - 1] = last;
 		}
 
 		/// <summary>
 		/// Creates a string representation of a property chain.
 		/// </summary>
 		public override string ToString() {
-			return string.Join(".", memberNames.ToArray());
+			// Performance: Calling string.Join causes much overhead when it's not needed.
+			switch (_memberNames.Count)
+			{
+				case 0:
+					return string.Empty;
+				case 1:
+					return _memberNames[0];
+				default:
+#if NET35
+					return string.Join(ValidatorOptions.PropertyChainSeparator, _memberNames.ToArray());
+#else
+					return string.Join(ValidatorOptions.PropertyChainSeparator, _memberNames);
+#endif			
+			}
 		}
 
 		/// <summary>
@@ -125,13 +150,18 @@ namespace FluentValidation.Internal {
 		/// Builds a property path.
 		/// </summary>
 		public string BuildPropertyName(string propertyName) {
+			if (_memberNames.Count == 0) {
+				return propertyName;
+			}
+
 			var chain = new PropertyChain(this);
 			chain.Add(propertyName);
 			return chain.ToString();
 		}
 
-		public int Count {
-			get { return memberNames.Count; }
-		}
+		/// <summary>
+		/// Number of member names in the chain
+		/// </summary>
+		public int Count => _memberNames.Count;
 	}
 }

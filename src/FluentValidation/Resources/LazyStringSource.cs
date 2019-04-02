@@ -13,23 +13,54 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 namespace FluentValidation.Resources {
 	using System;
+	using Validators;
 
+	/// <summary>
+	/// Lazily loads the string
+	/// </summary>
 	public class LazyStringSource : IStringSource {
-		readonly Func<string> _stringProvider;
+		readonly Func<IValidationContext, string> _stringProvider;
 
-		public LazyStringSource(Func<string> stringProvider) {
+		/// <summary>
+		/// Creates a LazyStringSource
+		/// </summary>
+		public LazyStringSource(Func<IValidationContext, string> stringProvider) {
 			_stringProvider = stringProvider;
 		}
 
-		public string GetString() {
-			return _stringProvider();
+		/// <summary>
+		/// Gets the value
+		/// </summary>
+		/// <returns></returns>
+		public string GetString(IValidationContext context) {
+			try {
+				return _stringProvider(context);
+			}
+			catch (NullReferenceException ex) {
+				throw new FluentValidationMessageFormatException("Could not build error message- the message makes use of properties from the containing object, but the containing object was null.", ex);
+			}
 		}
 
-		public string ResourceName { get { return null; } }
-		public Type ResourceType { get { return null; } }
+		/// <summary>
+		/// Resource type
+		/// </summary>
+		public string ResourceName => null;
+
+		/// <summary>
+		/// Resource name
+		/// </summary>
+		public Type ResourceType => null;
+	}
+
+	public class FluentValidationMessageFormatException : Exception {
+		public FluentValidationMessageFormatException(string message) : base(message) {
+		}
+
+		public FluentValidationMessageFormatException(string message, Exception innerException) : base(message, innerException) {
+		}
 	}
 }

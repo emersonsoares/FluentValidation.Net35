@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 namespace FluentValidation.Tests {
 	using System;
@@ -25,11 +25,20 @@ namespace FluentValidation.Tests {
 		CultureInfo _originalCulture;
 
 		public CultureScope(CultureInfo culture) {
+
+#if !NETCOREAPP2_0 && !NETCOREAPP1_1
 			_originalCulture = Thread.CurrentThread.CurrentCulture;
 			_originalUiCulture = Thread.CurrentThread.CurrentUICulture;
 
 			Thread.CurrentThread.CurrentCulture = culture;
 			Thread.CurrentThread.CurrentUICulture = culture;
+#else
+			_originalCulture = CultureInfo.CurrentCulture;
+			_originalUiCulture = CultureInfo.CurrentUICulture;
+
+			CultureInfo.CurrentCulture = culture;
+			CultureInfo.CurrentUICulture = culture;
+#endif
 		}
 
 		public CultureScope(string culture) : this(new CultureInfo(culture)) {
@@ -37,8 +46,23 @@ namespace FluentValidation.Tests {
 		}
 
 		public void Dispose() {
+#if !NETCOREAPP2_0 && !NETCOREAPP1_1
 			Thread.CurrentThread.CurrentCulture = _originalCulture;
 			Thread.CurrentThread.CurrentUICulture = _originalUiCulture;
+#else
+			CultureInfo.CurrentCulture = _originalCulture;
+			CultureInfo.CurrentUICulture = _originalUiCulture;
+#endif
+		}
+
+		public static void SetDefaultCulture() {
+#if !NETCOREAPP2_0 && !NETCOREAPP1_1
+			Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+			Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+#else
+			CultureInfo.CurrentCulture = new CultureInfo("en-US");
+			CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+#endif
 		}
 	}
 }

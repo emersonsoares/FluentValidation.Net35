@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
@@ -27,7 +27,8 @@ namespace FluentValidation.Validators {
 	public class CreditCardValidator : PropertyValidator {
 		// This logic was taken from the CreditCardAttribute in the ASP.NET MVC3 source.
 
-		public CreditCardValidator() : base(() => Messages.CreditCardError) {
+		public CreditCardValidator() : base(new LanguageStringSource(nameof(CreditCardValidator))) {
+			
 		}
 
 		protected override bool IsValid(PropertyValidatorContext context) {
@@ -37,7 +38,7 @@ namespace FluentValidation.Validators {
 				return true;
 			}
 
-			value = value.Replace("-", "");
+			value = value.Replace("-", "").Replace(" ", "");
 
 			int checksum = 0;
 			bool evenDigit = false;

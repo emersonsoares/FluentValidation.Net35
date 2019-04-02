@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation {
@@ -43,5 +43,23 @@ namespace FluentValidation {
 		/// Applies the condition to the current validator only.
 		/// </summary>
 		CurrentValidator
+	}
+
+     /// <summary>
+     /// Specifies the severity of a rule. 
+     /// </summary>
+	public enum Severity {
+		/// <summary>
+		/// Error
+		/// </summary>
+		Error,
+		/// <summary>
+		/// Warning
+		/// </summary>
+		Warning,
+		/// <summary>
+		/// Info
+		/// </summary>
+		Info
 	}
 }

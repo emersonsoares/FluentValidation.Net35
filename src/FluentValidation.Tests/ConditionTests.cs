@@ -13,43 +13,72 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Tests {
-	using NUnit.Framework;
+	using System.Threading.Tasks;
+	using Xunit;
 
-	[TestFixture]
+	
 	public class ConditionTests {
-		[Test]
+		[Fact]
 		public void Validation_should_succeed_when_condition_does_not_match() {
 			var validator = new TestConditionValidator();
 			var result = validator.Validate(new Person {Id = 1});
-			Assert.That(result.IsValid);
+			Assert.True(result.IsValid);
 		}
 
-		[Test]
+		[Fact]
+		public void Validation_should_succeed_when_async_condition_does_not_match() {
+			var validator = new TestConditionAsyncValidator();
+			var result = validator.ValidateAsync(new Person {Id = 1}).Result;
+            result.IsValid.ShouldBeTrue();
+		}
+
+		[Fact]
 		public void Validation_should_fail_when_condition_matches() {
 			var validator = new TestConditionValidator();
 			var result = validator.Validate(new Person());
 			result.IsValid.ShouldBeFalse();
 		}
 
-		[Test]
+		[Fact]
+		public void Validation_should_fail_when_async_condition_matches() {
+			var validator = new TestConditionAsyncValidator();
+			var result = validator.ValidateAsync(new Person()).Result;
+			result.IsValid.ShouldBeFalse();
+		}
+
+		[Fact]
 		public void Validation_should_succeed_when_condition_matches() {
 			var validator = new InverseConditionValidator();
 			var result = validator.Validate(new Person());
 			result.IsValid.ShouldBeTrue();
 		}
 
-		[Test]
+		[Fact]
+		public void Validation_should_succeed_when_async_condition_matches() {
+			var validator = new InverseConditionAsyncValidator();
+			var result = validator.ValidateAsync(new Person()).Result;
+			result.IsValid.ShouldBeTrue();
+		}
+
+		[Fact]
 		public void Validation_should_fail_when_condition_does_not_match() {
 			var validator = new InverseConditionValidator();
 			var result = validator.Validate(new Person {Id = 1});
 			result.IsValid.ShouldBeFalse();
 		}
 
-		[Test]
+		[Fact]
+		public void Validation_should_fail_when_async_condition_does_not_match() {
+			var validator = new InverseConditionAsyncValidator();
+			var result = validator.ValidateAsync(new Person {Id = 1}).Result;
+			result.IsValid.ShouldBeFalse();
+		}
+
+		[Fact]
 		public void Condition_is_applied_to_all_validators_in_the_chain() {
 			var validator = new TestValidator {
 				v => v.RuleFor(x => x.Surname).NotNull().NotEqual("foo").When(x => x.Id > 0)
@@ -59,7 +88,17 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(0);
 		}
 
-		[Test]
+		[Fact]
+		public void Async_condition_is_applied_to_all_validators_in_the_chain() {
+			var validator = new TestValidator {
+				v => v.RuleFor(x => x.Surname).NotNull().NotEqual("foo").WhenAsync(async (x,c) => x.Id > 0)
+			};
+
+			var result = validator.ValidateAsync(new Person()).Result;
+			result.Errors.Count.ShouldEqual(0);
+		}
+
+		[Fact]
 		public void Condition_is_applied_to_single_validator_in_the_chain_when_ApplyConditionTo_set_to_CurrentValidator() {
 			var validator = new TestValidator {
 				v => v.RuleFor(x => x.Surname).NotNull().NotEqual("foo").When(x => x.Id > 0, ApplyConditionTo.CurrentValidator)
@@ -69,15 +108,37 @@ namespace FluentValidation.Tests {
 			result.Errors.Count.ShouldEqual(1);
 		}
 
+		[Fact]
+		public void Async_condition_is_applied_to_single_validator_in_the_chain_when_ApplyConditionTo_set_to_CurrentValidator() {
+			var validator = new TestValidator {
+				v => v.RuleFor(x => x.Surname).NotNull().NotEqual("foo").WhenAsync(async (x,c) => x.Id > 0, ApplyConditionTo.CurrentValidator)
+			};
+
+			var result = validator.ValidateAsync(new Person()).Result;
+			result.Errors.Count.ShouldEqual(1);
+		}
+
 		private class TestConditionValidator : AbstractValidator<Person> {
 			public TestConditionValidator() {
 				RuleFor(x => x.Forename).NotNull().When(x => x.Id == 0);
 			}
 		}
 
+		class TestConditionAsyncValidator : AbstractValidator<Person> {
+			public TestConditionAsyncValidator() {
+				RuleFor(x => x.Forename).NotNull().WhenAsync(async (x,c) => x.Id == 0);
+			}
+		}
+
 		private class InverseConditionValidator : AbstractValidator<Person> {
 			public InverseConditionValidator() {
 				RuleFor(x => x.Forename).NotNull().Unless(x => x.Id == 0);
+			}
+		}
+
+		class InverseConditionAsyncValidator : AbstractValidator<Person> {
+			public InverseConditionAsyncValidator() {
+				RuleFor(x => x.Forename).NotNull().UnlessAsync(async (x,c) => x.Id == 0);
 			}
 		}
 	}

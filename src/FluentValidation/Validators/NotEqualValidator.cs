@@ -13,43 +13,37 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
 	using System;
 	using System.Collections;
 	using System.Reflection;
-	using Attributes;
-	using Internal;
 	using Resources;
 
 	public class NotEqualValidator : PropertyValidator, IComparisonValidator {
-		readonly IEqualityComparer comparer;
-		readonly Func<object, object> func;
+		private readonly IEqualityComparer _comparer;
+		private readonly Func<object, object> _func;
 
-		public NotEqualValidator(Func<object, object> func, MemberInfo memberToCompare)
-			: base(() => Messages.notequal_error) {
-			this.func = func;
+		public NotEqualValidator(Func<object, object> func, MemberInfo memberToCompare) : base(new LanguageStringSource(nameof(NotEqualValidator))) {
+			_func = func;
 			MemberToCompare = memberToCompare;
 		}
 
-		public NotEqualValidator(Func<object, object> func, MemberInfo memberToCompare, IEqualityComparer equalityComparer)
-			: base(() => Messages.notequal_error) {
-			this.func = func;
-			this.comparer = equalityComparer;
+		public NotEqualValidator(Func<object, object> func, MemberInfo memberToCompare, IEqualityComparer equalityComparer) : base(new LanguageStringSource(nameof(NotEqualValidator))) {
+			_func = func;
+			_comparer = equalityComparer;
 			MemberToCompare = memberToCompare;
 		}
 
-		public NotEqualValidator(object comparisonValue)
-			: base(() => Messages.notequal_error) {
+		public NotEqualValidator(object comparisonValue) : base(new LanguageStringSource(nameof(NotEqualValidator))) {
 			ValueToCompare = comparisonValue;
 		}
 
-		public NotEqualValidator(object comparisonValue, IEqualityComparer equalityComparer)
-			: base(() => Messages.notequal_error) {
+		public NotEqualValidator(object comparisonValue, IEqualityComparer equalityComparer) :base(new LanguageStringSource(nameof(NotEqualValidator)) ){
 			ValueToCompare = comparisonValue;
-			comparer = equalityComparer;
+			_comparer = equalityComparer;
 		}
 
 		protected override bool IsValid(PropertyValidatorContext context) {
@@ -65,8 +59,8 @@ namespace FluentValidation.Validators {
 		}
 
 		private object GetComparisonValue(PropertyValidatorContext context) {
-			if (func != null) {
-				return func(context.Instance);
+			if (_func != null) {
+				return _func(context.Instance);
 			}
 
 			return ValueToCompare;
@@ -80,15 +74,15 @@ namespace FluentValidation.Validators {
 		public object ValueToCompare { get; private set; }
 
 		protected bool Compare(object comparisonValue, object propertyValue) {
-			if(comparer != null) {
-				return comparer.Equals(comparisonValue, propertyValue);
+			if(_comparer != null) {
+				return _comparer.Equals(comparisonValue, propertyValue);
 			}
 
 			if (comparisonValue is IComparable && propertyValue is IComparable) {
 				return Internal.Comparer.GetEqualsResult((IComparable)comparisonValue, (IComparable)propertyValue);
 			}
 
-			return comparisonValue == propertyValue;
+			return Object.Equals(comparisonValue, propertyValue);
 		}
 	}
 }

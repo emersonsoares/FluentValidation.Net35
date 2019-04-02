@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <PackageId>FluentValidation.WebApi</PackageId>
+    <Authors>Jeremy Skinner</Authors>
+    <Company />
+    <Description>ASP.NET WebApi integration for FluentValidation</Description>
+    <Copyright>Copyright (c) Jeremy Skinner 2008-2019</Copyright>
+    <PackageLicenseUrl>https://github.com/JeremySkinner/FluentValidation/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://fluentvalidation.net</PackageProjectUrl>
+    <PackageIconUrl>https://fluentvalidation.net/assets/images/logo/fluent-validation-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt</PackageReleaseNotes>
+    <NeutralLanguage>en</NeutralLanguage>
+    <RepositoryUrl>https://github.com/JeremySkinner/fluentvalidation</RepositoryUrl>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <Version Condition="'$(WebApiVersion)'!=''">$(WebApiVersion)</Version>
+    <!-- Signining is only performed as part of the release build -->
+    <SignAssembly Condition="'$(AssemblyOriginatorKeyFile)'!=''">True</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' and '$(AssemblyOriginatorKeyFile)'!=''">True</PublicSign>
+    <DebugType>embedded</DebugType>
+    <DocumentationFile Condition="'$(Configuration)'=='Release'">bin\$(Configuration)\$(TargetFramework)\FluentValidation.WebApi.xml</DocumentationFile>
+    <PackageReleaseNotes>
+Changes in 7.5.1:
+* Added support for CustomizeValidatorAttribute for consistency with MVC5 and AspNetCore. 
+
+Changes in 7.4:
+* Support for WebApi 5.2.4 and improved integration with WebApi's validation pipeline.
+	 
+Full release notes can be found at https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt
+</PackageReleaseNotes>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FluentValidation\FluentValidation.csproj" />
+    <ProjectReference Include="..\FluentValidation.ValidatorAttribute\FluentValidation.ValidatorAttribute.csproj" />
+  </ItemGroup>
+  <Import Project="../netfx.props" />
+</Project>

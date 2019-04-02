@@ -13,36 +13,37 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Tests {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
-	using NUnit.Framework;
+	using Xunit;
 
-	[TestFixture]
+	
 	public class UserStateTester {
 		TestValidator validator;
 
-		[SetUp]
-		public void Setup() {
+		
+		public  UserStateTester() {
 			validator = new TestValidator();
 		}
 
-		[Test]
+		[Fact]
 		public void Stores_user_state_against_validation_failure() {
 			validator.RuleFor(x => x.Surname).NotNull().WithState(x =>  "foo");
 			var result = validator.Validate(new Person());
 			result.Errors.Single().CustomState.ShouldEqual("foo");
 		}
 
-		[Test]
+		[Fact]
 		public void Throws_when_provider_is_null() {
-			typeof(ArgumentNullException).ShouldBeThrownBy(() => validator.RuleFor(x => x.Surname).NotNull().WithState(null));
+			typeof(ArgumentNullException).ShouldBeThrownBy(() => validator.RuleFor(x => x.Surname).NotNull().WithState((Func<Person, object>) null));
 		}
 
-		[Test]
+		[Fact]
 		public void Correctly_provides_object_being_validated() {
 			Person resultPerson = null;
 
@@ -55,6 +56,13 @@ namespace FluentValidation.Tests {
 			validator.Validate(person);
 
 			resultPerson.ShouldBeTheSameAs(person);
+		}
+
+		[Fact]
+		public void Can_Provide_state_for_item_in_collection() {
+			validator.RuleForEach(x => x.Children).NotNull().WithState((person, child) => "test");
+			var result = validator.Validate(new Person {Children = new List<Person> {null}});
+			result.Errors[0].CustomState.ToString().ShouldEqual("test");
 		}
 	}
 }

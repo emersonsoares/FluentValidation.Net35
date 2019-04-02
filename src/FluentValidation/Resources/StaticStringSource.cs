@@ -13,46 +13,43 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://www.codeplex.com/FluentValidation
+// The latest version of this file can be found at https://github.com/jeremyskinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Resources {
 	using System;
+	using Validators;
 
 	/// <summary>
 	/// Represents a static string.
 	/// </summary>
 	public class StaticStringSource : IStringSource {
-		readonly string message;
+		readonly string _message;
 
 		/// <summary>
 		/// Creates a new StringErrorMessageSource using the specified error message as the error template.
 		/// </summary>
 		/// <param name="message">The error message template.</param>
 		public StaticStringSource(string message) {
-			this.message = message;
+			_message = message;
 		}
 
 		/// <summary>
 		/// Construct the error message template
 		/// </summary>
 		/// <returns>Error message template</returns>
-		public string GetString() {
-			return message;
+		public string GetString(IValidationContext context) {
+			return _message;
 		}
 
 		/// <summary>
 		/// The name of the resource if localized.
 		/// </summary>
-		public string ResourceName {
-			get { return null; }
-		}
+		public string ResourceName => null;
 
 		/// <summary>
 		/// The type of the resource provider if localized.
 		/// </summary>
-		public Type ResourceType {
-			get { return null; }
-		}
+		public Type ResourceType => null;
 	}
 }

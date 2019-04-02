@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
 namespace FluentValidation.Validators {
@@ -22,17 +22,17 @@ namespace FluentValidation.Validators {
 	using System.Linq;
 
     public class NotEmptyValidator : PropertyValidator, INotEmptyValidator {
-		readonly object defaultValueForType;
+		readonly object _defaultValueForType;
 
-		public NotEmptyValidator(object defaultValueForType) : base(() => Messages.notempty_error) {
-			this.defaultValueForType = defaultValueForType;
+		public NotEmptyValidator(object defaultValueForType) : base(new LanguageStringSource(nameof(NotEmptyValidator))) {
+			this._defaultValueForType = defaultValueForType;
 		}
 
 		protected override bool IsValid(PropertyValidatorContext context) {
 			if (context.PropertyValue == null
 			    || IsInvalidString(context.PropertyValue)
 			    || IsEmptyCollection(context.PropertyValue)
-			    || Equals(context.PropertyValue, defaultValueForType)) {
+			    || Equals(context.PropertyValue, _defaultValueForType)) {
 				return false;
 			}
 
@@ -45,23 +45,16 @@ namespace FluentValidation.Validators {
 		}
 
 		bool IsInvalidString(object value) {
-			if (value is string) {
-				return IsNullOrWhiteSpace(value as string);
+			if (value is string s) {
+#if !NET35
+				return string.IsNullOrWhiteSpace(s);
+#else
+				return string.IsNullOrEmpty(s) || s.Trim().Length == 0;
+#endif
 			}
 			return false;
 		}
-
-		bool IsNullOrWhiteSpace(string value) {
-			if (value != null) {
-				for (int i = 0; i < value.Length; i++) {
-					if (!char.IsWhiteSpace(value[i])) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-	}
+    }
 
 	public interface INotEmptyValidator : IPropertyValidator {
 	}

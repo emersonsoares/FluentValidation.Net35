@@ -1,4 +1,4 @@
-#region License
+/*#region License
 // Copyright (c) Jeremy Skinner (http://www.jeremyskinner.co.uk)
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); 
@@ -13,24 +13,24 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // 
-// The latest version of this file can be found at http://fluentvalidation.codeplex.com
+// The latest version of this file can be found at https://github.com/JeremySkinner/FluentValidation
 #endregion
 
+#pragma warning disable 618
 namespace FluentValidation.Tests {
 	using System.Linq;
-	using NUnit.Framework;
+	using Xunit;
 	using Validators;
 
-	[TestFixture]
+	
 	public class PropertyRuleValidatorExtensionsTester {
 		AbstractValidator<Person> validator;
 
-		[SetUp]
-		public void Setup() {
+		public  PropertyRuleValidatorExtensionsTester() {
 			validator = new TestValidator();
 		}
 
-		[Test]
+		[Fact]
 		public void RemovePropertyValidator_should_remove_property() {
 			validator.RuleFor(x => x.Surname).Length(5, 10).WithMessage("foo");
 
@@ -40,10 +40,10 @@ namespace FluentValidation.Tests {
 			validator.RemoveRule(x => x.Surname, typeof(LengthValidator));
 
 			result = validator.Validate(new Person {Surname = "Matthew Leibowitz"});
-			Assert.AreEqual(0, result.Errors.Count);
+			Assert.Equal(0, result.Errors.Count);
 		}
 
-		[Test]
+		[Fact]
 		public void ReplacePropertyValidator_should_replace_property() {
 			validator.RuleFor(x => x.Surname).Length(5, 10).WithMessage("foo");
 
@@ -53,10 +53,10 @@ namespace FluentValidation.Tests {
 			validator.ReplaceRule(x => x.Surname, new LengthValidator(10, 20));
 
 			result = validator.Validate(new Person {Surname = "Matthew Leibowitz"});
-			Assert.AreEqual(0, result.Errors.Count);
+			Assert.Equal(0, result.Errors.Count);
 		}
 
-		[Test]
+		[Fact]
 		public void ReplacePropertyValidator_should_replace_field_rule() {
 			validator.RuleFor(x => x.NameField).Length(5, 10).WithMessage("foo");
 
@@ -66,10 +66,10 @@ namespace FluentValidation.Tests {
 			validator.ReplaceRule(x => x.NameField, new LengthValidator(10, 20));
 
 			result = validator.Validate(new Person { NameField = "Matthew Leibowitz" });
-			Assert.AreEqual(0, result.Errors.Count);
+			Assert.Equal(0, result.Errors.Count);
 		}
 
-		[Test]
+		[Fact]
 		public void ClearPropertyValidator_should_remove_property() {
 			validator.RuleFor(x => x.Surname).Length(5, 10).WithMessage("foo");
 
@@ -79,7 +79,7 @@ namespace FluentValidation.Tests {
 			validator.ClearRules(x => x.Surname);
 
 			result = validator.Validate(new Person {Surname = "Matthew Leibowitz"});
-			Assert.AreEqual(0, result.Errors.Count);
+			Assert.Equal(0, result.Errors.Count);
 		}
 	}
-}
+}*/
