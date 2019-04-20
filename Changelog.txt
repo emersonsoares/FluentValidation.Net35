@@ -1,3 +1,15 @@
+8.2.3 - 12 April 2019
+Fix issue with WebApi integration where DataAnnotations validation could generate duplicate messages when used in the same 
+project as FluentValidation.
+
+8.2.2 - 5 April 2019 
+Fix typo in FluentValidation.DependencyInjectionExtensions package name.
+
+8.2.1 - 4 April 2019
+Resolved issue using InjectValidator with RuleForEach.
+Add support for a default IValidatorInterceptor to be registered with the ASP.NET Core Service Provider.
+Added "Without" test extensions for consistency with existing "With" text extensions.
+
 8.2.0 - 26 March 2019
 Add extensions for injecting child validators using the ASP.NET Core Service Provider.
 WithLocalizedMessage is deprecated. Use the overload of WithMessage that takes a Func instead.
