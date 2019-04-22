@@ -2,12 +2,12 @@
 title: Getting Started
 ---
 
-<div class="callout-block callout-info"><div class="icon-holder">*&nbsp;*{: .fa .fa-info-circle}
-</div><div class="content">
+<div class="callout-block callout-info"><div class="icon-holder" markdown="1">*&nbsp;*{: .fa .fa-info-circle}
+</div><div class="content" markdown="1">
 {: .callout-title}
 #### Deprecation Notice
 
-Integration with ASP.NET MVC5 is considered legacy and will not be supported beyond FluentValidation 8.x. 
+Integration with ASP.NET MVC 5 is considered legacy and will not be supported beyond FluentValidation 8.x. 
 For an optimal experience, we suggest using FluentValidtation with [ASP.NET Core](/aspnet).
 
 </div></div>

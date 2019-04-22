@@ -19,6 +19,7 @@
 #endregion
 
 namespace FluentValidation.Validators {
+	using System;
 	using System.Collections;
 	using Resources;
 	using System.Linq;
@@ -31,29 +32,19 @@ namespace FluentValidation.Validators {
 		}
 
 		protected override bool IsValid(PropertyValidatorContext context) {
-			if (!(context.PropertyValue == null
-			      || IsInvalidString(context.PropertyValue)
-			      || IsEmptyCollection(context.PropertyValue)
-			      || Equals(context.PropertyValue, _defaultValueForType))) {
-				return false;
+			switch (context.PropertyValue) {
+				case null: 
+				case string s when s.IsNullOrWhiteSpace():
+				case ICollection c when c.Count == 0:
+				case Array a when a.Length == 0:
+				case IEnumerable e when !e.Cast<object>().Any():
+					return true;
 			}
 
-			return true;
-		}
-
-		bool IsEmptyCollection(object propertyValue) {
-			return propertyValue is IEnumerable collection && !collection.Cast<object>().Any();
-		}
-
-		bool IsInvalidString(object value) {
-			if (value is string s) {
-#if !NET35
-				return string.IsNullOrWhiteSpace(s);
-#else
-				return string.IsNullOrEmpty(s) || s.Trim().Length == 0;
-#endif
+			if (Equals(context.PropertyValue, _defaultValueForType)) {
+				return true;
 			}
-
+			
 			return false;
 		}
 	}
