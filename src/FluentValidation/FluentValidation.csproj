@@ -77,6 +77,7 @@ Full release notes can be found at https://github.com/JeremySkinner/FluentValida
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;1705;1591</NoWarn>
+    <PackageId>FluentValidation.NET35</PackageId>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.1|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
@@ -89,7 +90,7 @@ Full release notes can be found at https://github.com/JeremySkinner/FluentValida
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />
-    <Compile Include="Compatibility\StringExtension.cs" />
+    <Compile Include="Compatibility\StringExtension.cs" Condition="'$(TargetFramework)'!='net35'" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'!='net35'">
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
