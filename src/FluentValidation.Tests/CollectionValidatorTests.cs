@@ -205,7 +205,12 @@ namespace FluentValidation.Tests {
 			await validator.ValidateAsync(person);
 
 			Assert.NotEmpty(result);
-			Assert.All(result, Assert.True);
+#if NET35
+			AssertEx
+#else
+			Assert
+#endif
+				.All(result, Assert.True);
 		}
 		
 		public class OrderValidator : AbstractValidator<Order> {
@@ -227,7 +232,13 @@ namespace FluentValidation.Tests {
 				_counter += 1;
 			}
 
-			await Task.Delay(milliseconds);
+			await
+#if NET35
+			TaskEx
+#else
+			Task
+# endif
+			.Delay(milliseconds);
 
 			lock (_lock) {
 				_counter -= 1;

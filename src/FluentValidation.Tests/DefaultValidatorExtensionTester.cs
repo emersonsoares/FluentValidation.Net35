@@ -249,7 +249,13 @@ namespace FluentValidation.Tests {
 			public AsyncModelTestValidator()
 			{
 				RuleForEach(m => m.Ids)
-					.MustAsync((g, cancel) => Task.FromResult(true));
+					.MustAsync((g, cancel) =>
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(true));
 			}
 		}
 	}

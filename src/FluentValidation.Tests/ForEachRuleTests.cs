@@ -200,7 +200,12 @@ namespace FluentValidation.Tests {
 			});
 
 			Assert.NotEmpty(result);
-			Assert.All(result, Assert.True);
+#if NET35
+			AssertEx
+#else
+			Assert
+#endif
+				.All(result, Assert.True);
 		}
 
 		[Fact]
@@ -316,7 +321,13 @@ namespace FluentValidation.Tests {
 				_counter += 1;
 			}
 
-			await Task.Delay(milliseconds);
+			await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.Delay(milliseconds);
 
 			lock (_lock) {
 				_counter -= 1;

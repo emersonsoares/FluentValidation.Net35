@@ -108,7 +108,13 @@ namespace FluentValidation.Tests {
 				.NotNull()
 				.DependentRules(() => {
 					validator.RuleFor(o => o.Address).NotNull();
-					validator.RuleFor(o => o.Age).MustAsync(async (p, token) => await Task.FromResult(p > 10));
+					validator.RuleFor(o => o.Age).MustAsync(async (p, token) => await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(p > 10));
 				});
 
 			var result = await validator.ValidateAsync(new Person());
@@ -123,12 +129,24 @@ namespace FluentValidation.Tests {
 
 		[Fact]
 		public async Task TestAsyncWithDependentRules_AsyncEntry() {
-			var validator = new TestValidator();
+			var validator = new TestValidator();			
 			validator.RuleFor(o => o)
-				.MustAsync(async (p, ct) => await Task.FromResult(p.Forename != null))
+				.MustAsync(async (p, ct) => await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(p.Forename != null))
 				.DependentRules(() => {
 					validator.RuleFor(o => o.Address).NotNull();
-					validator.RuleFor(o => o.Age).MustAsync(async (p, token) => await Task.FromResult(p > 10));
+					validator.RuleFor(o => o.Age).MustAsync(async (p, token) => await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(p > 10));
 				});
 
 			var result = await validator.ValidateAsync(new Person());
@@ -277,13 +295,25 @@ namespace FluentValidation.Tests {
 			public AsyncValidator() {
 				RuleFor(model => model)
 					.MustAsync(async (ie, ct) => {
-						await Task.Delay(500);
+						await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.Delay(500);
 						return true;
 					})
 					.DependentRules(() => {
 						RuleFor(m => m)
 							.MustAsync(async (ie, ct) => {
-								await Task.Delay(1000);
+								await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.Delay(1000);
 								return false;
 							});
 					});
@@ -297,7 +327,13 @@ namespace FluentValidation.Tests {
 					.DependentRules(() => {
 						RuleFor(m => m)
 							.MustAsync(async (ie, ct) => {
-								await Task.Delay(1000);
+								await
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.Delay(1000);
 								return false;
 							});
 					});

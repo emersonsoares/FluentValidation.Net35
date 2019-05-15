@@ -32,7 +32,7 @@ namespace FluentValidation.Attributes
 	/// </summary>
 	public class AttributedValidatorFactory : IValidatorFactory, IParameterValidatorFactory {
 		private readonly Func<Type, IValidator> _instanceFactory;
-		private readonly ConcurrentDictionary<Type, object> _cache = new ConcurrentDictionary<Type, object>();
+		private readonly ConcurrentDictionary<Type, IValidator> _cache = new ConcurrentDictionary<Type, IValidator>();
 
 		/// <summary>
 		/// Creates an instance of <see cref="AttributedValidatorFactory"/>.

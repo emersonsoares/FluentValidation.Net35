@@ -59,7 +59,13 @@ namespace FluentValidation.Tests {
 			Action code
 			)
 		{
-			return Assert.Throws(exceptionType, code);
+			return
+#if NET35
+				AssertEx
+#else
+				Assert
+#endif
+				.Throws(exceptionType,code);
 		}
 
 		public static T ShouldBe<T>(this object actual) {

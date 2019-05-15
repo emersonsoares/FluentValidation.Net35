@@ -11,6 +11,14 @@
 	public class AccessorCacheTests {
 		private readonly ITestOutputHelper output;
 
+#if NET35
+		public AccessorCacheTests():
+			this(new DebugWindowOutputHelper())
+		{
+
+		}
+#endif
+
 		public AccessorCacheTests(ITestOutputHelper output) {
 			this.output = output;
 			AccessorCache<Person>.Clear();
