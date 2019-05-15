@@ -1,20 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <PackageId>FluentValidation.WebApi</PackageId>
-    <Authors>Jeremy Skinner</Authors>
-    <Company />
+    <PackageId>FluentValidation.WebApi.NET35</PackageId>
     <Description>ASP.NET WebApi integration for FluentValidation</Description>
-    <Copyright>Copyright (c) Jeremy Skinner 2008-2019</Copyright>
-    <PackageLicenseUrl>https://github.com/JeremySkinner/FluentValidation/blob/master/License.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://fluentvalidation.net</PackageProjectUrl>
-    <PackageIconUrl>https://fluentvalidation.net/assets/images/logo/fluent-validation-icon.png</PackageIconUrl>
-    <PackageReleaseNotes>https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt</PackageReleaseNotes>
-    <NeutralLanguage>en</NeutralLanguage>
-    <RepositoryUrl>https://github.com/JeremySkinner/fluentvalidation</RepositoryUrl>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <Version Condition="'$(WebApiVersion)'!=''">$(WebApiVersion)</Version>
-    <!-- Signining is only performed as part of the release build -->
+    <!-- Signing is only performed as part of the release build -->
     <SignAssembly Condition="'$(AssemblyOriginatorKeyFile)'!=''">True</SignAssembly>
     <DelaySign>False</DelaySign>
     <DebugType>embedded</DebugType>
@@ -34,10 +23,6 @@ Changes in 7.4:
 	 
 Full release notes can be found at https://github.com/JeremySkinner/FluentValidation/blob/master/Changelog.txt
 </PackageReleaseNotes>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />

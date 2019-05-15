@@ -4,18 +4,12 @@
     <Authors>Jeremy Skinner</Authors>
     <Company />
     <Description>A validation library for .NET that uses a fluent interface to construct strongly-typed validation rules.</Description>
-    <Copyright>Copyright (c) Jeremy Skinner 2008-2019</Copyright>
-    <PackageProjectUrl>https://fluentvalidation.net</PackageProjectUrl>
-    <PackageIconUrl>https://fluentvalidation.net/assets/images/logo/fluent-validation-icon.png</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/JeremySkinner/FluentValidation/blob/master/License.txt</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/JeremySkinner/fluentvalidation</RepositoryUrl>
-    <NeutralLanguage>en</NeutralLanguage>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <!-- Signining is only performed as part of the release build -->
+    <!-- Signing is only performed as part of the release build -->
     <SignAssembly Condition="'$(AssemblyOriginatorKeyFile)'!=''">True</SignAssembly>
     <DelaySign>False</DelaySign>
     <DebugType>embedded</DebugType>
-    <LangVersion>7.3</LangVersion>
+    <PackageId>FluentValidation.ValidatorAttribute.NET35</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="CommonAssemblyInfo.cs" />
