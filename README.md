@@ -1,5 +1,7 @@
 <img src="https://raw.githubusercontent.com/JeremySkinner/FluentValidation/master/docs/assets/images/logo/fluent-validation-logo.png" alt="FluentValidation" width="250px" />
 
+This is Fork of original [FluentValidation](https://github.com/JeremySkinner/FluentValidation) with support .NET 3.5 Framework
+
 [Full Documentation](https://fluentvalidation.net)
 
 A small validation library for .NET that uses a fluent interface
@@ -9,23 +11,26 @@ and lambda expressions for building validation rules.
 FluentValidation can be installed using the Nuget package manager or the `dotnet` CLI.
 
 ```
-Install-Package FluentValidation
+Install-Package FluentValidation.NET35
 ```
 
 For ASP.NET Core integration:
 ```
-Install-Package FluentValidation.AspNetCore
+Install-Package FluentValidation.AspNetCore.NET35
 ```
 
 For legacy ASP.NET MVC/WebApi integration:
 
 ```
-Install-Package FluentValidation.MVC5
-Install-Package FluentValidation.WebApi
+Install-Package FluentValidation.MVC5.NET35
+Install-Package FluentValidation.WebApi.NET35
 ```
+
+---
+[![Build Status](https://dev.azure.com/jeremy0621/FluentValidation/_apis/build/status/JeremySkinner.FluentValidation?branchName=master)](https://dev.azure.com/jeremy0621/FluentValidation/_build/latest?definitionId=1&branchName=master)
+
 |         |       |       |
 | ------- | ----- | ----- |
-| | [![Build status](https://ci.appveyor.com/api/projects/status/b9bkth37cdtsifac?svg=true)](https://ci.appveyor.com/project/JeremySkinner/fluentvalidation) | [![Tests](https://img.shields.io/appveyor/tests/JeremySkinner/FluentValidation.svg)](https://ci.appveyor.com/project/JeremySkinner/fluentvalidation) |
 | `FluentValidation` | [![NuGet](https://img.shields.io/nuget/v/FluentValidation.svg)](https://nuget.org/packages/FluentValidation) | [![Nuget](https://img.shields.io/nuget/dt/FluentValidation.svg)](https://nuget.org/packages/FluentValidation) |
 | `FluentValidation.AspNetCore` | [![NuGet](https://img.shields.io/nuget/v/FluentValidation.AspNetCore.svg)](https://nuget.org/packages/FluentValidation.AspNetCore) | [![Nuget](https://img.shields.io/nuget/dt/FluentValidation.AspNetCore.svg)](https://nuget.org/packages/FluentValidation.AspNetCore)
 | `FluentValidation.Mvc5` | [![NuGet](https://img.shields.io/nuget/v/FluentValidation.Mvc5.svg)](https://nuget.org/packages/FluentValidation.Mvc5) | [![Nuget](https://img.shields.io/nuget/dt/FluentValidation.Mvc5.svg)](https://nuget.org/packages/FluentValidation.Mvc5)

@@ -26,12 +26,19 @@ namespace FluentValidation.Tests {
 	using Validators;
 	using System.Threading.Tasks;
 
+	
 	public class ValidatorTesterTester {
 		private TestValidator validator;
 
 		public ValidatorTesterTester() {
 			validator = new TestValidator();
-			validator.RuleFor(x => x.CreditCard).Must(creditCard => !string.IsNullOrEmpty(creditCard)).WhenAsync((x, cancel) => Task.Run(() => { return x.Age >= 18; }));
+			validator.RuleFor(x => x.CreditCard).Must(creditCard => !string.IsNullOrEmpty(creditCard)).WhenAsync((x, cancel) =>
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.Run(() => { return x.Age >= 18; }));
 			validator.RuleFor(x => x.Forename).NotNull();
 			validator.RuleForEach(person => person.NickNames).MinimumLength(5);
 		}
@@ -64,9 +71,13 @@ namespace FluentValidation.Tests {
 
 		[Fact]
 		public void ShouldNotHaveValidationError_should_have_validation_error_details_when_thrown_ruleforeach() {
-			ValidationTestException validationTestException = Assert.Throws<ValidationTestException>(() =>
-				validator.ShouldNotHaveValidationErrorFor(l => l.NickNames, new[] { "magician", "bull" }));
-			Assert.Contains("The length of 'Nick Names' must be at least 5 characters. You entered 4 characters.", validationTestException.Message);
+			using (new CultureScope("en-us"))
+			{
+				ValidationTestException validationTestException = Assert.Throws<ValidationTestException>(() =>
+			validator.ShouldNotHaveValidationErrorFor(l => l.NickNames, new[] { "magician", "bull" }));
+				Assert.Contains("The length of 'Nick Names' must be at least 5 characters. You entered 4 characters.", validationTestException.Message);
+
+			}
 		}
 
 		[Fact]
@@ -533,7 +544,7 @@ namespace FluentValidation.Tests {
 				// Cannot have a street number/lot and no street name.
 				RuleFor(address => address.Street)
 					.NotNull()
-					.When(address => !string.IsNullOrWhiteSpace(address.StreetNumber))
+					.When(address => !address.StreetNumber.IsNullOrWhiteSpace())
 					.WithMessage("A street name is required when a street number has been provided. Eg. Smith Street.");
 			}
 		}

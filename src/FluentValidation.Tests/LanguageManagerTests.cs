@@ -111,8 +111,19 @@
 			LanguageManager manager = (LanguageManager)_languages;
 			var languages = manager.GetSupportedLanguages();
 			var keys = manager.GetSupportedTranslationKeys();
-			
-			Assert.All(languages, l => Assert.All(keys, k => CheckParametersMatch(l, k)));
+
+#if NET35
+			AssertEx
+#else
+			Assert
+#endif				
+				.All(languages, l =>
+				#if NET35
+							AssertEx
+				#else
+							Assert
+				#endif
+				.All(keys, k => CheckParametersMatch(l, k)));
 		}
 
 		[Fact]
@@ -143,26 +154,37 @@
 			result.Errors[0].ErrorMessage.ShouldEqual("bar");
 		}
 		
-		[Fact]
+		[Fact]		
 		public void Falls_back_to_default_localization_key_when_error_code_key_not_found() {
-			var originalLanguageManager = ValidatorOptions.LanguageManager;
-			ValidatorOptions.LanguageManager = new CustomLanguageManager();
-			
-			var validator = new InlineValidator<Person>();
-			validator.RuleFor(x => x.Forename).NotNull().WithErrorCode("DoesNotExist");
-			var result = validator.Validate(new Person());
+			using (new CultureScope("es-es"))
+			{
+				var originalLanguageManager = ValidatorOptions.LanguageManager;
+				ValidatorOptions.LanguageManager = new CustomLanguageManager();
 
-			ValidatorOptions.LanguageManager = originalLanguageManager;
-			
-			result.Errors[0].ErrorMessage.ShouldEqual("foo");
+				var validator = new InlineValidator<Person>();
+				validator.RuleFor(x => x.Forename).NotNull().WithErrorCode("DoesNotExist");
+				var result = validator.Validate(new Person());
+
+				ValidatorOptions.LanguageManager = originalLanguageManager;
+
+				result.Errors[0].ErrorMessage.ShouldEqual("foo"); 
+			}
 		}
 		
 		void CheckParametersMatch(string languageCode, string translationKey) {
 			var referenceMessage = _languages.GetString(translationKey);
 			var translatedMessage = _languages.GetString(translationKey, new CultureInfo(languageCode));
 			if (referenceMessage == translatedMessage) return;
-			var referenceParameters = ExtractTemplateParameters(referenceMessage);
-			var translatedParameters = ExtractTemplateParameters(translatedMessage);
+			var referenceParameters = ExtractTemplateParameters(referenceMessage)
+#if NET35
+				.ToArray()
+#endif
+				;
+			var translatedParameters = ExtractTemplateParameters(translatedMessage)
+#if NET35
+				.ToArray()
+#endif
+				;
 			Assert.False(referenceParameters.Count() != translatedParameters.Count() ||
 				referenceParameters.Except(translatedParameters).Any(),
 				$"Translation for language {languageCode}, key {translationKey} has parameters {string.Join(",", translatedParameters)}, expected {string.Join(",", referenceParameters)}");
@@ -176,6 +198,7 @@
 		public class CustomLanguageManager : LanguageManager {
 			public CustomLanguageManager() {
 				AddTranslation("en", "NotNullValidator", "foo");
+				AddTranslation("en", "DoesNotExist", "foo");
 				AddTranslation("en", "CustomKey", "bar");
 			}
 		}

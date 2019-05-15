@@ -254,7 +254,7 @@ namespace FluentValidation.Tests {
 
 		[Theory]
 		[MemberData(nameof(PreValidationReturnValueTheoryData))]
-		public void WhenPreValidationReturnsFalse_ResultReturnToUserImmediatly_Validate(ValidationResult preValidationResult) {
+		public void WhenPreValidationReturnsFalse_ResultReturnToUserImmediatly_Validate(ValidationResult preValidationResult) {			
 			testValidatorWithPreValidate.PreValidateMethod = (context, validationResult) => {
 				foreach (ValidationFailure validationFailure in preValidationResult.Errors) {
 					validationResult.Errors.Add(validationFailure);
@@ -280,7 +280,14 @@ namespace FluentValidation.Tests {
 
 				return false;
 			};
-			testValidatorWithPreValidate.RuleFor(person => person.Age).MustAsync((age, token) => Task.FromResult(age >= 0));
+			testValidatorWithPreValidate.RuleFor(person => person.Age).MustAsync((age, token) =>
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(age >= 0)
+			);
 
 			var result = await testValidatorWithPreValidate.ValidateAsync(new Person() { Age = -1 });
 
@@ -323,7 +330,13 @@ namespace FluentValidation.Tests {
 				validationResult.Errors.Add(new ValidationFailure(testProperty, testMessage));
 				return true;
 			};
-			testValidatorWithPreValidate.RuleFor(person => person.Age).MustAsync((age, token) => Task.FromResult(age >= 0));
+			testValidatorWithPreValidate.RuleFor(person => person.Age).MustAsync((age, token) =>
+#if NET35
+			TaskEx
+#else
+			Task
+#endif
+				.FromResult(age >= 0));
 
 			var result = await testValidatorWithPreValidate.ValidateAsync(new Person() { Age = -1 });
 

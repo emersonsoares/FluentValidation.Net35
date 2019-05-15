@@ -74,7 +74,7 @@ namespace FluentValidation.Tests {
 				// RuleFor() respects the grouped When() and 
 				// Unless() predicates.
 				// 
-				When(x => x.Id > 0 && x.Age <= 65, () => { RuleFor(x => x.Orders.Count).Equal(0).Unless(x => String.IsNullOrWhiteSpace(x.CreditCard) == false); });
+				When(x => x.Id > 0 && x.Age <= 65, () => { RuleFor(x => x.Orders.Count).Equal(0).Unless(x => x.CreditCard.IsNullOrWhiteSpace() == false); });
 				//.Unless(x => x.Age > 65);
 			}
 		}
@@ -89,7 +89,7 @@ namespace FluentValidation.Tests {
 				// 
 				WhenAsync(async (x,c) => x.Id > 0 && x.Age <= 65,
 					() => {
-						RuleFor(x => x.Orders.Count).Equal(0).UnlessAsync(async (x,c) => String.IsNullOrWhiteSpace(x.CreditCard) == false);
+						RuleFor(x => x.Orders.Count).Equal(0).UnlessAsync(async (x,c) => x.CreditCard.IsNullOrWhiteSpace() == false);
 					}
 				);
 			}
