@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace System.Reflection
 {
@@ -27,6 +28,13 @@ namespace System.Reflection
 			typeof(Type).GetMethod(nameof(IsPointerImpl), BindingFlags.Instance | BindingFlags.NonPublic);
 		readonly static MethodInfo MethodIsPrimitiveImpl =
 			typeof(Type).GetMethod(nameof(IsPrimitiveImpl), BindingFlags.Instance | BindingFlags.NonPublic);
+		readonly static MethodInfo IsContextfulImplImpl =
+			typeof(Type).GetMethod(nameof(IsContextfulImpl), BindingFlags.Instance | BindingFlags.NonPublic);
+		readonly static MethodInfo IsMarshalByRefImplImpl =
+			typeof(Type).GetMethod(nameof(IsMarshalByRefImpl), BindingFlags.Instance | BindingFlags.NonPublic);
+		readonly static MethodInfo IsValueTypeImplImpl =
+			typeof(Type).GetMethod(nameof(IsValueTypeImpl), BindingFlags.Instance | BindingFlags.NonPublic);
+
 
 		internal TypeInfo(Type type) => this.type = type;
 
@@ -102,7 +110,92 @@ namespace System.Reflection
 
 		protected override bool IsPrimitiveImpl() => (bool)MethodIsPrimitiveImpl.Invoke(type, null);
 
+		public override bool IsGenericType => type.IsGenericType;
+
+		public override bool ContainsGenericParameters => type.ContainsGenericParameters;
+
+		public override MethodBase DeclaringMethod => type.DeclaringMethod;
+
+		public override Type DeclaringType => type.DeclaringType;
+
+		public override bool Equals(object o)
+		{
+			return type.Equals(o);
+		}
+
+		public override Type[] FindInterfaces(TypeFilter filter, object filterCriteria) =>
+			type.FindInterfaces(filter, filterCriteria);
+
+		public override MemberInfo[] FindMembers(MemberTypes memberType, BindingFlags bindingAttr, MemberFilter filter, object filterCriteria) => type.FindMembers(memberType, bindingAttr, filter, filterCriteria);
+
 		public IEnumerable<Type> GenericTypeArguments => type.GetGenericArguments();
+		public override GenericParameterAttributes GenericParameterAttributes => type.GenericParameterAttributes;
+
+		public override int GenericParameterPosition => type.GenericParameterPosition;
+
+		public override int GetArrayRank() => type.GetArrayRank();
+
+		public override MemberInfo[] GetDefaultMembers() => type.GetDefaultMembers();
+
+		public override EventInfo[] GetEvents() => type.GetEvents();
+
+		public override Type[] GetGenericArguments() => type.GetGenericArguments();
+
+		public override Type[] GetGenericParameterConstraints() => type.GetGenericParameterConstraints();
+
+		public override Type GetGenericTypeDefinition() => type.GetGenericTypeDefinition();
+
+		public override int GetHashCode() => base.GetHashCode();
+
+		public override InterfaceMapping GetInterfaceMap(Type interfaceType) => type.GetInterfaceMap(interfaceType);
+
+		public override MemberInfo[] GetMember(string name, BindingFlags bindingAttr) => type.GetMember(name, bindingAttr);
+
+		public override MemberInfo[] GetMember(string name, MemberTypes type, BindingFlags bindingAttr)
+		{
+			return base.GetMember(name, type, bindingAttr);
+		}
+
+		public override bool IsAssignableFrom(Type c) => type.IsAssignableFrom(c);
+
+		protected override bool IsContextfulImpl() => (bool)IsContextfulImplImpl.Invoke(type, null);
+
+		public override bool IsGenericParameter => type.IsGenericParameter;
+
+		public override bool IsGenericTypeDefinition => type.IsGenericTypeDefinition;
+
+		public override bool IsInstanceOfType(object o) => type.IsInstanceOfType(o);
+
+		protected override bool IsMarshalByRefImpl() => (bool)IsMarshalByRefImplImpl.Invoke(type, null);
+
+		public override bool IsSubclassOf(Type c) => type.IsSubclassOf(c);
+
+		protected override bool IsValueTypeImpl() => (bool)IsValueTypeImplImpl.Invoke(type, null);
+
+		public override Type MakeArrayType() => type.MakeArrayType();
+
+		public override Type MakeArrayType(int rank) => type.MakeArrayType(rank);
+
+		public override Type MakeByRefType() => type.MakeByRefType();
+
+		public override Type MakeGenericType(params Type[] typeArguments)
+		{
+			return type.MakeGenericType(typeArguments);
+		}
+
+		public override Type MakePointerType() => type.MakePointerType();
+
+		public override MemberTypes MemberType => type.MemberType;
+
+		public override int MetadataToken => type.MetadataToken;
+
+		public override Type ReflectedType => type.ReflectedType;
+
+		public override StructLayoutAttribute StructLayoutAttribute => type.StructLayoutAttribute;
+
+		public override string ToString() => base.ToString();
+
+		public override RuntimeTypeHandle TypeHandle => type.TypeHandle;
 	}
 #endif
 
